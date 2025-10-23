@@ -73,18 +73,23 @@ protected:
 
     /// Current motor position
     Data::PrimitiveTypeArray<double> motorPos;
+    Data::PrimitiveTypeArray<typeInf> motorPos_typeInf;
 
     /// Current position of the hand in cartesian coordonates
     Data::PrimitiveTypeArray<double> cartesianHand;
+    Data::PrimitiveTypeArray<typeInf> cartesianHand_typeInf;
 
     /// Current position of the target in cartesian coordonates
     Data::PrimitiveTypeArray<double> cartesianTarget;
+    Data::PrimitiveTypeArray<typeInf> cartesianTarget_typeInf;
 
     /// Difference between the hand and the target in cartesian coordonates
     Data::PrimitiveTypeArray<double> cartesianDiff;
+    Data::PrimitiveTypeArray<typeInf> cartesianDiff_typeInf;
 
     /// Current motor speed 
     Data::PrimitiveTypeArray<double> dataMotorSpeed;
+    Data::PrimitiveTypeArray<typeInf> dataMotorSpeed_typeInf;
 
     /// converter used to convert motorPos to cartesionPos
     armlearn::kinematics::Converter *converter;
