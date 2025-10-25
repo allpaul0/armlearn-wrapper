@@ -1,124 +1,44 @@
 {
-	// Choose between stopping in or reaching the objectives
-	"reachingObjectives": true,
-
-	// True if training validation is used for random starting pos and random target pos
-	"doTrainingValidation": false,
-
-	// If True, progressive mode is done by increasing motor position, instead it is the euclidian distance that increase
-	"progressiveModeMotor": false,
-
-	// If True, the target size will not be progressive but the range to reach will. If true, progressiveModeMotor is ignored
-	"progressiveRangeTarget": false,
-
-	// Use the progressive mode for choosing randomly the targets, is ignored if progressiveRangeTarget is true
-	"progressiveModeTargets": false,
-
-	// Initial maximum distance between the target and the starting position
-	"maxLengthTargets": 100,
-	
-	// Allow to choose if the starting position are random or if it will always be the BACKHOE
-	"doRandomStartingPosition": false,
-
-	// Use the progressive mode for choosing randomly the starting position (no effect if doRandomStartingPosition is false)
-	"progressiveModeStartingPos": false,
-
-	// Initial maximum distance between the random starting position and the BACKHOE one
-	"maxLengthStartingPos": 100,
-
-	// Coefficient to upgrade the maxLengthStartingPos and MaxLengthTargets
-	"coefficientUpgradeAdd": 20,
-
-	// Coefficient to upgrade the maxLengthStartingPos and MaxLengthTargets
-	"coefficientUpgradeMult": 1.2,
-
-	// Number of iterations to cumulate to upgrade the maxLengthStartingPos and MaxLengthTargets
-	"nbIterationsUpgrade": 2,
-
-	// Distance in milimeters to reach to validate the target
-	"rangeTarget" : 5,
-	
-	// Allow to start with a predifined TPG
-	"startPreviousTPG": false,
-
-		// Name of the predifined TPG (no effect if startPreviousTPG is false)
-		"namePreviousTPG": "out_0155.dot",
-
-	// True to activate a control over the deletion of trajectories
-	"controlTrajectoriesDeletion": false,
-
-	// Proportion of trajectories (pair startingPos-Target) reused at each training generation
-	"propTrajectoriesReused": 0,
-
-	// Penalty for moving a motor : the goal is to avoid to much unecessary speed 
-	"penaltySpeed" : 0.05,
-
-	// Coefficient to multiply the reward with
-	"coefRewardMultiplication" : 0.01,
-
-	// true to load the validation trajectories
-	"loadValidationTrajectories": false,
-
-	// true to save the validation trajectories
-	"saveValidationTrajectories": false,
-
-	// Seed to init the algorithm (gegelati or SAC) 
-	"seed": 0,
-
-	// Set interactive mode or not (usefull for calcul machine)
-	"interactiveMode": false,
-
-    // if true, selection for gegelati is based on distance but with adding a bonus for the number of iterations to reach the target
-	"bonusNbIteration": true,
-
-    // if true, mean score of root is based on standard deviation and mean instead of juste the mean of episode.
+    "reachingObjectives": true,
+    "doTrainingValidation": false,
+    "progressiveModeMotor": false,
+    "progressiveRangeTarget": false,
+    "progressiveModeTargets": false,
+    "maxLengthTargets": 100,
+    "doRandomStartingPosition": false,
+    "progressiveModeStartingPos": false,
+    "maxLengthStartingPos": 100,
+    "coefficientUpgradeAdd": 20,
+    "coefficientUpgradeMult": 1.2,
+    "nbIterationsUpgrade": 2,
+    "rangeTarget": 5,
+    "startPreviousTPG": false,
+    "namePreviousTPG": "out_0155.dot",
+    "controlTrajectoriesDeletion": false,
+    "propTrajectoriesReused": 0,
+    "penaltySpeed": 0.05,
+    "coefRewardMultiplication": 0.01,
+    "loadValidationTrajectories": false,
+    "saveValidationTrajectories": false,
+    "seed": 0,
+    "interactiveMode": false,
+    "bonusNbIteration": true,
     "meanScoreWithStd": false,
-
-	// Value to penalize if an unavailable action is taken : reward = reward - penalty if isScoreResult is true, else score = score - penalty
-	"penaltyMoveUnavailable": 1,
-
-	// Size in degree of a discrete action, and max size of a continuous action
-	"sizeAction": 10,
-
-	// if true, deactivate the training and only logs results
-	"testing": false,
-
-	// path to store the testing output
-	"testPath": "outLogs/best_root.dot",//"../data/"
-
-	// type of instruction used in the algorithm (defined in instructions.cpp)
-	"instrType": "fixedpt", // anything in ["double", "float", "int", "fixedpt"]
-
-	// if true, use trigonometric functions in the instructions
-	"useInstrTrig": true,
-	
-	// if true, use logarithm and exponential functions in the instructions
-	"useInstrLogExp": true,
-
-	// if true, use comparison in the instructions
-	"useInstrComparison": true,
-
-    // if true, use expensive arithmetic instructions
+    "penaltyMoveUnavailable": 1,
+    "sizeAction": 10,
+    "testing": false,
+    "testPath": "outLogs/best_root.dot",
+    "instrType": "double",
+    "useInstrTrig": false,
+    "useInstrLogExp": false,
+    "useInstrComparison": true,
     "useInstrExpensiveArithmetic": true,
-
-	// If false, action change the motor position, if true action change the motor speed
-	"actionSpeed": false,
-
-	// True to stop coordonate/target bellow 0 on z axis and collision
-	"realSimulation": true,
-
-	// Number of training iteration (nbIterationsPerPolicyEvaluation will be only for validation/training validation)
-	"nbIterationTraining": 100,
-
-	// Set a limit of time to train (in seconds), if 0: no limit
-	"timeMaxTraining": 7200, //2 hours
-
-    // When testing a root, a test will be made on the root above this number of iteration, if the score of the root is to low, the root is canceled
+    "actionSpeed": false,
+    "realSimulation": true,
+    "nbIterationTraining": 100,
+    "timeMaxTraining": 172800,
     "nbIterationRootCanceled": 100,
-
-	// if true, allow the arm to make 360% circle
-	"canDo360": false,
-
-	// Kill the algorithm if a collision is encountered. TPGs are automatically killed
-	"killIfCollision": true
+    "canDo360": false,
+    "killIfCollision": true,
+    "instrSetName": "comp"
 }

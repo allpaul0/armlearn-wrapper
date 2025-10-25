@@ -20,7 +20,7 @@
 #include <armlearn/basiccartesianconverter.h>
 #include <armlearn/devicelearner.h>
 #include "trainingParameters.h"
-#include "codeGen/externHeader.h"
+#include "codegen/externHeader.h"
 
 /**
 * LearningEnvironment to use armLean in order to learn how to move a robotic arm.

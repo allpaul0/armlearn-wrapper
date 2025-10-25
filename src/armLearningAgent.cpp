@@ -1,7 +1,7 @@
 
 #include "armLearningAgent.h"
 #include "armLearnLogger.h"
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 #include "armlearnEvaluationResult.h"
 
 void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){

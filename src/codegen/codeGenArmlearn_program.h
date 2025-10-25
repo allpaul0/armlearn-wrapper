@@ -1,11 +1,13 @@
 /**
  * File generated with GEGELATI v2.0.0
- * On the 2025-10-10 15:12:45
+ * On the 2025-10-27 14:00:36
  * With the CodeGen::ProgramGenerationEngine.
  */
 
 #ifndef C_codeGenArmlearn_program_H
 #define C_codeGenArmlearn_program_H
+
+#include "externHeader.h"
 
 double P0();
 double P1();
@@ -56,4 +58,9 @@ double P45();
 double P46();
 double P47();
 double P48();
+double P49();
+double P50();
+double P51();
+double P52();
+double P53();
 #endif

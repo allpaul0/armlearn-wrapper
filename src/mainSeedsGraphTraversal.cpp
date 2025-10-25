@@ -10,7 +10,7 @@
 #include "instructions.h"
 #include "trainingParameters.h"
 #include "armLearnLogger.h"
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 #include "armLearningAgent.h"
 
 #define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 // number of seeds used to find graph traversals

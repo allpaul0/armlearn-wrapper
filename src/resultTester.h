@@ -6,7 +6,7 @@
 #define ARMGEGELATI_RESULTTESTER_H
 
 #include <armlearn/input.h>
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 
 int agentTest();
 

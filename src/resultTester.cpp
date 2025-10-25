@@ -12,7 +12,7 @@
 #include "resultTester.h"
 #include "instructions.h"
 
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 
 int main() {
     /*

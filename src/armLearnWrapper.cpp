@@ -1,4 +1,4 @@
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 
 void ArmLearnWrapper::computeInput() {
 

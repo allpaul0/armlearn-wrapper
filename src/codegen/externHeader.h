@@ -24,17 +24,17 @@ extern "C" {
   typedef double    typeInf;
 #endif
 
-    extern typeInf* in1;
-    extern typeInf* in2;
-    extern typeInf* in3;
-    extern typeInf* in4;
+  extern typeInf* in1;
+  extern typeInf* in2;
+  extern typeInf* in3;
+  extern typeInf* in4;
 
-    inline typeInf convEnvToInf(double input){
-      #ifdef USE_FIXEDPT
-        return double_to_fixedpt(input);
-      #endif
-        return ((typeInf) input);
-    }
+  inline typeInf convEnvToInf(double input){
+    #ifdef USE_FIXEDPT
+      return double_to_fixedpt(input);
+    #endif
+      return ((typeInf) input);
+  }
 
 #ifdef __cplusplus
 }

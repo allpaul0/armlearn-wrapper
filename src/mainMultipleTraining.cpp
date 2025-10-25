@@ -13,7 +13,7 @@
 #include "trainingParameters.h"
 #include "armLearnLogger.h"
 
-#include "ArmLearnWrapper.h"
+#include "armLearnWrapper.h"
 #include "armLearningAgent.h"
 
 

@@ -13,7 +13,7 @@ extern "C" {
 #include "../trainingParameters.h"
 #include "../armLearnLogger.h"
 
-#include "../ArmLearnWrapper.h"
+#include "../armLearnWrapper.h"
 #include "../armLearningAgent.h"
 
 
@@ -73,6 +73,7 @@ int main(int argc, char** argv ){
     int nbActionsEp = 0;
     int nbEpisodes = 0;
     double scoreOrig = 0;
+
     while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
         if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || nbActions == 0){
             scoreOrig += armLearnEnv.getScore();
@@ -80,8 +81,8 @@ int main(int argc, char** argv ){
             nbEpisodes++;
             nbActionsEp = 0;
         }
-    	auto actionID = ((TPG::TPGAction*)(tee.executeFromRoot(* root).first.back()))->getActionID();
-        armLearnEnv.doAction(actionID);
+    	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
+        armLearnEnv.doAction((double) actionID);
         ofs << nbActions << " " << actionID << std::endl;
         nbActions++;
         nbActionsEp++;
@@ -104,6 +105,7 @@ int main(int argc, char** argv ){
     double scorePruned = 0;
     armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
     std::cout << "Play with pruned TPG code" << std::endl;
+    
     while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
         if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || nbActions == 0){
             scorePruned += armLearnEnv.getScore();
@@ -112,9 +114,8 @@ int main(int argc, char** argv ){
             nbEpisodes++;
             nbActionsEp = 0;
         }
-    	auto actionID = ((TPG::TPGAction*)(tee.executeFromRoot(* root).first.back()))->getActionID();
-
-        armLearnEnv.doAction(actionID);
+    	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
+        armLearnEnv.doAction((double) actionID);
         ofs2 << nbActions << " " << actionID << std::endl;
         nbActions++;
         nbActionsEp++;
@@ -156,7 +157,7 @@ int main(int argc, char** argv ){
 
     std::cout << "Printing C code." << std::endl;
 	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::switchMode);
-    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("codeGenArmlearn", dotGraph, codeGenPath);
+    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", dotGraph, codeGenPath);
     tpggen->generateTPGGraph();
 
     return 0;
