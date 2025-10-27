@@ -56,18 +56,20 @@ Informations include:
 - Methods for evaluation
 README-LEARNING-STRATEGY.md
 
-## Learning Environment supports multiple types  
+## Learning Environment supports multiple types at Inference 
 
 The Learning Environment can be interfaced with the following types when performing inference **{double, float, int, fixedpt}**. 
 Its up to you to **provide a TPG that uses those types** to do its internal computation. TPG code should be inserted in src/codegen. 
 
 To **compile the Learning Environment for a specific type**, a preprocessor directive must be used. CMake can therefore be configured to pass this directive at compile time. 
 ```
-$cp -r my/tpg/codegen/codeGenArmlearn* src/codegen/.
-$mkdir build & &cd build
-$CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
-$make armCodeGen
+cp -r my/tpg/codegen/codeGenArmlearn* src/codegen/.
+mkdir build & &cd build
+CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
+make armCodeGen
 ```
+
+**Do not compile the Learning Environment for a specific type** if you want to **perform training or codegen** since the types are not suppored by the GEGELATI library, it will create a floating-point exception. 
 
 
 ## License
