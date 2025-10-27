@@ -1,18 +1,22 @@
 cmake_minimum_required(VERSION 3.16)
 
 # **********************
-# ArmGegelati project.
+# GEGELATI ArmLearn-Wrapper project.
 #
 # Control of the WidowX robotic arm  using the Gegelati library.
 #
 # This CMake project creates 3 executables:
-# - armGegelati: Training Gegelati on the ArmLearnWrapper learning environment
-# - armGrabGegelati: Control the robotic arm with gegelati.
-# - armGrabStandalone: Control the robotic arm without gegelati.
+# - Training: Training the TPG on the ArmLearnWrapper learning environment
+# - MultipleTraining: Create multiple trainings
+# - CodeGen: Reduce the size of the trained TPG graph by generating C code, making 
+# it free from the gegelati library. Removes unnecessary parts of the graph called hitchickers and unecessary instructions called introns.
+# - InferenceEnv: Execute a TPG from C code, after code generation, on the ArmLearnWrapper learning environment
+# - GrabGegelati: Control the robotic arm with gegelati.
+# - GrabStandalone: Control the robotic arm without gegelati.
 #
 # **********************
 
-project(armGegelati)
+project(GEGELATI_ArmLearn-Wrapper)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -82,11 +86,10 @@ list(REMOVE_ITEM
         )
 
 
-# armGegelati: Training Gegelati on the ArmLearnWrapper learning environment -> main.cpp
-add_executable(armGegelati ${armgegelati_files})
-
-target_link_libraries(armGegelati ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(armGegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+# Training: Training Gegelati on the ArmLearnWrapper learning environment
+add_executable(Training ${armgegelati_files})
+target_link_libraries(Training ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(Training PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 list(REMOVE_ITEM
         armgegelati_files
@@ -96,10 +99,10 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainMultipleTraining.cpp)
 
 
-# armMultipleTraining: Create multiple trainings
-add_executable(armMultipleTraining ${armgegelati_files})
-target_link_libraries(armMultipleTraining ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(armMultipleTraining PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+# MultipleTraining: Create multiple trainings
+add_executable(MultipleTraining ${armgegelati_files})
+target_link_libraries(MultipleTraining ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(MultipleTraining PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 list(REMOVE_ITEM
         armgegelati_files
@@ -120,10 +123,10 @@ list(APPEND
         )
 
 
-# Execute a TPG from C code, after code generation by mainCodeGen
-add_executable(armCodeGen ${armgegelati_files})
-target_link_libraries(armCodeGen ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(armCodeGen PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+# InferenceEnv, Execute a TPG from C code, after code generation on the ArmLearnWrapper learning environment
+add_executable(InferenceEnv ${armgegelati_files})
+target_link_libraries(InferenceEnv ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(InferenceEnv PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 
 # armGrabGegelati: Control the robotic arm with gegelati.
@@ -146,14 +149,13 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h)
 
 
-# armGraphPruner: Reduce the size of the trained TPG graph by generating C code, making 
+# CodeGen: Reduce the size of the trained TPG graph by generating C code, making 
 # it free from the gegelati library. Removes unnecessary parts of the graph called hitchickers. 
-add_executable(armGraphPruner ${armgegelati_files})
-target_link_libraries(armGraphPruner ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(armGraphPruner PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+add_executable(CodeGen ${armgegelati_files})
+target_link_libraries(CodeGen ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(CodeGen PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 
-# armGrabGegelati: Control the robotic arm with gegelati.
 list(REMOVE_ITEM
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainCodeGen.cpp)
@@ -161,14 +163,15 @@ list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h)
-
+        
+# GrabGegelati: Control the robotic arm with gegelati.
 add_executable(armGrabGegelati ${armgegelati_files})
 target_link_libraries(armGrabGegelati ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
 target_compile_definitions(armGrabGegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
-# armGrabStandalone: Control the robotic arm without gegelati
-add_executable(armGrabStandalone ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp)
-target_link_libraries(armGrabStandalone /usr/local/lib/libarmlearn.so)
+# GrabStandalone: Control the robotic arm without gegelati
+add_executable(GrabStandalone ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp)
+target_link_libraries(GrabStandalone /usr/local/lib/libarmlearn.so)
 
 
 list(REMOVE_ITEM
@@ -180,11 +183,11 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mainSeedsGraphTraversal.cpp)
 
 
-# mainSeedsGraphTraversal: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference 
+# PreCalculInferenceBenchmark: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference 
 # using graph traversal
-add_executable(mainSeedsGraphTraversal ${armgegelati_files})
-target_link_libraries(mainSeedsGraphTraversal ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(mainSeedsGraphTraversal PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+add_executable(PreCalculInferenceBenchmark ${armgegelati_files})
+target_link_libraries(PreCalculInferenceBenchmark ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(PreCalculInferenceBenchmark PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 
 # *******************************************
