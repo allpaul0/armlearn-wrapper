@@ -12,6 +12,7 @@
 #include "armLearnLogger.h"
 #include "armLearnWrapper.h"
 #include "armLearningAgent.h"
+#include "codegen/externHeader.h"
 
 #define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 // number of seeds used to find graph traversals
 #define MAX_NB_SEEDS_TO_SEARCH 2E2 // to avoid infinite loop in complex LE and TPG
@@ -332,6 +333,9 @@ int main(int argc, char *argv[])
     std::cout << "\n\033[1;34m----- Final status of mapITI -----\033[0m\n";
     print_mapITI(mapITI);
 
+    // create outLogs/PreCalcul directory if it does not exist
+    std::filesystem::create_directories("outLogs/PreCalcul");
+
     // Write data to CSV file
     storeToHeaderFile("outLogs/PreCalcul/seeds_nbActionsToTerminal.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
 
@@ -447,6 +451,7 @@ void storeToHeaderFile(
     // Write Header
     file << "#ifndef SEEDS_H\n"
     << "#define SEEDS_H\n\n"
+    << "#include \"../codegen/externHeader.h\"\n\n"
     << "#define NB_SEED " << nbValues << "\n"
     << "#define NB_VALUES_PER_CLASS " << NB_VALUES_PER_CLASS << "\n\n";
 
@@ -456,10 +461,10 @@ void storeToHeaderFile(
     for (const auto& info : dataSourcesInfo) {
         file << "// " << info.name << "\n";
         for (size_t i = 0; i < info.size; ++i, ++featureIdx) {
-            file << "static const double dataSourcesLE_" << featureIdx << "[NB_SEED] = {";
+            file << "static const typeInf dataSourcesLE_" << featureIdx << "[NB_SEED] = {";
             for (size_t j = 0; j < indices.size(); j++) {
                 if (j > 0) file << ", ";
-                file << dataSources[indices[j]][featureIdx];
+                file << convEnvToInf(dataSources[indices[j]][featureIdx]);
             }
             file << "};\n";
         }

@@ -89,7 +89,7 @@ typedef	__uint128_t fixedptud;
 #endif
 
 #ifndef FIXEDPT_WBITS
-#define FIXEDPT_WBITS	8 //16 pour Q16.16 // 24 pour Q24.8
+#define FIXEDPT_WBITS	16 //pour Q16.16 // 24 pour Q24.8 //8 pour Q8.24
 #endif
 
 #if FIXEDPT_WBITS >= FIXEDPT_BITS
