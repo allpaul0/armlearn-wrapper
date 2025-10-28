@@ -453,7 +453,8 @@ void storeToHeaderFile(
     << "#define SEEDS_H\n\n"
     << "#include \"../codegen/externHeader.h\"\n\n"
     << "#define NB_SEED " << nbValues << "\n"
-    << "#define NB_VALUES_PER_CLASS " << NB_VALUES_PER_CLASS << "\n\n";
+    << "#define NB_VALUES_PER_CLASS " << NB_VALUES_PER_CLASS << "\n"
+    << "#define NB_CLASSES " << nbValues/NB_VALUES_PER_CLASS << "\n\n";
 
 
     // Write dataSourcesLE arrays (split into per-feature arrays)

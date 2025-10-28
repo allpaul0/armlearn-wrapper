@@ -112,15 +112,15 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h)
 list(APPEND
         armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
         )
 
 
@@ -129,25 +129,41 @@ add_executable(InferenceEnv ${armgegelati_files})
 target_link_libraries(InferenceEnv ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
 target_compile_definitions(InferenceEnv PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
+list(REMOVE_ITEM
+        armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+        )
+list(APPEND
+        armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp)
+
+# InferenceBenchmark: Benchmark the inference time of a trained TPG graph on the ArmLearnWrapper learning environment
+add_executable(InferenceBenchmark ${armgegelati_files})
+target_link_libraries(InferenceBenchmark ${GEGELATI_LIBRARIES})
+target_compile_definitions(InferenceBenchmark PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 # armGrabGegelati: Control the robotic arm with gegelati.
 list(REMOVE_ITEM
         armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
         )
 list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+)
 
 
 # CodeGen: Reduce the size of the trained TPG graph by generating C code, making 
