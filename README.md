@@ -69,7 +69,7 @@ CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
 make armCodeGen
 ```
 
-**Do not compile the Learning Environment for a specific type** if you want to **perform training or codegen** since the types are not suppored by the GEGELATI library, it will create a floating-point exception. 
+There is currently a LE for training and codegen that uses doubles and a LE for inference that can be configured and compiled for a specific type. 
 
 
 ## License

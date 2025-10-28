@@ -83,6 +83,7 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainSeedsGraphTraversal.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainInferenceBenchmark.cpp
         )
 
 
@@ -183,11 +184,11 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mainSeedsGraphTraversal.cpp)
 
 
-# PreCalculInferenceBenchmark: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference 
+# PreCalcul: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference of mainInferenceBenchmark.cpp
 # using graph traversal
-add_executable(PreCalculInferenceBenchmark ${armgegelati_files})
-target_link_libraries(PreCalculInferenceBenchmark ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(PreCalculInferenceBenchmark PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+add_executable(PreCalcul ${armgegelati_files})
+target_link_libraries(PreCalcul ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(PreCalcul PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 
 # *******************************************
