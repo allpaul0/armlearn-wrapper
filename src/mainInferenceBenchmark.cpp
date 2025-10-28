@@ -6,6 +6,7 @@
 #include "../armLearnWrapper.h"
 #include "../instructions.h"
 #include "../trainingParameters.h"
+#include "precalcul/seeds_nbActionsToTerminal.h"
 
 int main() {
 
@@ -24,7 +25,7 @@ int main() {
             // init new episode
         }
     	typeInf actionID = -1;
-        inferenceTPG(&actionID);
+            inferenceTPG(&actionID);
     }
     std::cout << "End inference benchmark" << std::endl;
 }

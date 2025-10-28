@@ -72,18 +72,18 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainMultipleTraining.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainCodeGen.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainSeedsGraphTraversal.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainInferenceBenchmark.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
         )
 
 
@@ -116,7 +116,7 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
@@ -137,7 +137,7 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
@@ -145,7 +145,7 @@ list(REMOVE_ITEM
         )
 list(APPEND
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainCodeGen.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h)
 
@@ -159,7 +159,7 @@ target_compile_definitions(CodeGen PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 list(REMOVE_ITEM
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/mainCodeGen.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp)
 list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.cpp

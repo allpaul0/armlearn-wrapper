@@ -1,20 +1,14 @@
 /**
 * \brief Executable for translating a .dot into a c file.
 */
-
-extern "C" {
-
-}
-
 #include <filesystem>
 
 #include <gegelati.h>
-#include "../instructions.h"
-#include "../trainingParameters.h"
-#include "../armLearnLogger.h"
-
-#include "../armLearnWrapper.h"
-#include "../armLearningAgent.h"
+#include "instructions.h"
+#include "trainingParameters.h"
+#include "armLearnLogger.h"
+#include "armLearnWrapper.h"
+#include "armLearningAgent.h"
 
 
 int main(int argc, char** argv ){
