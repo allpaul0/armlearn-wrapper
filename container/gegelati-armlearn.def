@@ -11,7 +11,7 @@ DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends tzdata
 alias sudo=eval
 
 # get arm learn, custom int version
-git clone --recurse-submodules https://github.com/gegelati/armlearn-wrapper.git
+git clone --recurse-submodules https://github.com/allpaul0/armlearn-wrapper.git
 cd armlearn-wrapper
 git checkout intEvaluation 
 
