@@ -71,6 +71,9 @@ make armCodeGen
 
 There is currently a LE for training and codegen that uses doubles and a LE for inference that can be configured and compiled for a specific type. 
 
+## enter container 
+apptainer run --bind $YOUR_WORKING_DIR/params:/params/ --bind $YOUR_WORKING_DIR/outLogs:/outLogs/ $USER/armlearn-wrapper/container/gegelati-armlearn.sif
+
 
 ## License
 This project is distributed under the CeCILL-C license (see LICENSE file).
