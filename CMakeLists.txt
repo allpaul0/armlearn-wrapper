@@ -215,7 +215,7 @@ target_compile_definitions(PreCalcul PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/../outLogs)
         add_custom_command(
-                TARGET ${PROJECT_NAME}
+                TARGET Training POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/../outLogs
                 COMMENT "Creating outLogs directory")
 endif()
@@ -223,7 +223,7 @@ endif()
 
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/../outLogs/dotfiles)
         add_custom_command(
-                TARGET ${PROJECT_NAME}
+                TARGET Training POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/../outLogs/dotfiles
                 COMMENT "Creating outLogs/dotfiles directory")
 endif()
