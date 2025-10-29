@@ -125,9 +125,9 @@ list(APPEND
 
 
 # InferenceEnv, Execute a TPG from C code, after code generation on the ArmLearnWrapper learning environment
-add_executable(InferenceEnv ${armgegelati_files})
-target_link_libraries(InferenceEnv ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(InferenceEnv PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+# add_executable(InferenceEnv ${armgegelati_files})
+# target_link_libraries(InferenceEnv ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+# target_compile_definitions(InferenceEnv PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 list(REMOVE_ITEM
         armgegelati_files
