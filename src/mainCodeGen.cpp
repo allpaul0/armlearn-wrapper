@@ -53,10 +53,10 @@ int main(int argc, char** argv ){
 
     auto &tpg = *la.getTPGGraph();
     Environment env = tpg.getEnvironment();
-    TPG::TPGGraph dotGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
-    File::TPGGraphDotImporter dot((dotfile).c_str(), env, dotGraph);
+    TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
+    File::TPGGraphDotImporter dot((dotfile).c_str(), env, tpgGraph);
     dot.importGraph();
-    const TPG::TPGVertex* root = dotGraph.getRootVertices().front();
+    const TPG::TPGVertex* root = tpgGraph.getRootVertices().front();
 
     armLearnEnv.loadValidationTrajectories();
 
@@ -87,10 +87,10 @@ int main(int argc, char** argv ){
     ofs.close();
 
     // Prune the unused vertices & teams
-    ((const TPG::TPGFactoryInstrumented&)dotGraph.getFactory()).clearUnusedTPGGraphElements(dotGraph);
-    dotGraph.clearProgramIntrons();
+    ((const TPG::TPGFactoryInstrumented&)tpgGraph.getFactory()).clearUnusedTPGGraphElements(tpgGraph);
+    tpgGraph.clearProgramIntrons();
 
-    root = dotGraph.getRootVertices().front();
+    root = tpgGraph.getRootVertices().front();
 
     // Play the game again to check the result remains the same.
     std::ofstream ofs2 ((codeGenPath + "tpg_pruned.txt").c_str(), std::ofstream::out);
@@ -127,7 +127,7 @@ int main(int argc, char** argv ){
     std::cout << "Analyze graph." << std::endl;
     TPG::PolicyStats ps;
     ps.setEnvironment(env);
-    ps.analyzePolicy(dotGraph.getRootVertices().front());
+    ps.analyzePolicy(tpgGraph.getRootVertices().front());
 
     // Print in file
     char bestPolicyStatsPath[150];
@@ -141,7 +141,7 @@ int main(int argc, char** argv ){
     std::cout << "Printing pruned dot file." << std::endl;
     char bestDot[150];
     sprintf(bestDot, (codeGenPath + "best_root_pruned.dot").c_str());
-    File::TPGGraphDotExporter dotExporter(bestDot, dotGraph);
+    File::TPGGraphDotExporter dotExporter(bestDot, tpgGraph);
     dotExporter.print();
 
     File::TPGGraphDotImporter dotImporter((codeGenPath + "best_root_pruned.dot").c_str(), env, tpg);
@@ -151,7 +151,7 @@ int main(int argc, char** argv ){
 
     std::cout << "Printing C code." << std::endl;
 	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::switchMode);
-    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", dotGraph, codeGenPath);
+    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath);
     tpggen->generateTPGGraph();
 
     return 0;
