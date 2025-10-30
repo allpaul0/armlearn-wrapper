@@ -73,10 +73,10 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainMultipleTraining.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
@@ -115,10 +115,10 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         )
@@ -152,10 +152,10 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/codeGenArmlearn_program.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
         )
 list(APPEND
         armgegelati_files

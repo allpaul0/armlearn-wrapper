@@ -8,7 +8,7 @@
 
 #include "codegen/externHeader.h"
 #include "precalcul/seeds_nbActionsToTerminal.h"
-#include "codegen/codeGenArmlearn.h"
+#include "codegen/TPG.h"
 
 #define NB_ACTIONS_INF 1E2
 

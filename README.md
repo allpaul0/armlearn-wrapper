@@ -63,10 +63,10 @@ Its up to you to **provide a TPG that uses those types** to do its internal comp
 
 To **compile the Learning Environment for a specific type**, a preprocessor directive must be used. CMake can therefore be configured to pass this directive at compile time. 
 ```
-cp -r my/tpg/codegen/codeGenArmlearn* src/codegen/.
+cp -r my/tpg/codegen/TPG* src/codegen/.
 mkdir build & &cd build
 CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
-make armCodeGen
+make InferenceBenchmark
 ```
 
 There is currently a LE for training and codegen that uses doubles and a LE for inference that can be configured and compiled for a specific type. 

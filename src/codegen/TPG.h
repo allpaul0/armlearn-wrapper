@@ -1,17 +1,17 @@
 /**
  * File generated with GEGELATI v2.0.0
- * On the 2025-10-27 14:00:36
+ * On the 2025-10-29 10:27:45
  * With the CodeGen::TPGGenerationEngine.
  */
 
-#ifndef C_codeGenArmlearn_H
-#define C_codeGenArmlearn_H
+#ifndef C_TPG_H
+#define C_TPG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "codeGenArmlearn_program.h"
+#include "TPG_program.h"
 
 #include <stdlib.h>
 #include <limits.h>
@@ -29,5 +29,6 @@ void inferenceTPG(double* actions);
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif
