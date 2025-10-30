@@ -19,11 +19,6 @@
 
 int main(){
 
-
-
-
-
-
     std::string repoConfig = "params/";
 
     // Set the parameters for the learning process.
@@ -31,11 +26,8 @@ int main(){
     Learn::LearningParameters globalParams;
     File::ParametersParser::loadParametersFromJson((repoConfig + "params.json").c_str(), globalParams);
 
-
     std::ifstream file((repoConfig + "launchMultiTraining.txt").c_str());
     int nbSeed = 5;
-
-        
 
     for(int seed = 0; seed < 5; seed++){
 
@@ -154,7 +146,7 @@ int main(){
         auto &tpg = *la.getTPGGraph();
         Environment env(set, params, armLearnEnv.getDataSources());
         File::TPGGraphDotImporter dotImporter((path + "outLogs/best_root.dot").c_str(), env, tpg);
-        trainingParams.testPath = (path + "outLogs").c_str();
+        trainingParams.tpgDotPath = (path + "outLogs").c_str();
         trainingParams.testing = true;
         la.testingBestRoot(globalParams.nbIterationsPerPolicyEvaluation);
 

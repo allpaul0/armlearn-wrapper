@@ -125,7 +125,7 @@ int main() {
     if(trainingParams.testing){
         auto &tpg = *la.getTPGGraph();
         Environment env(set, params, armLearnEnv.getDataSources());
-        File::TPGGraphDotImporter dotImporter((trainingParams.testPath + "/best_root.dot").c_str(), env, tpg);
+        File::TPGGraphDotImporter dotImporter((trainingParams.tpgDotPath + "/best_root.dot").c_str(), env, tpg);
         la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
     } else {
 

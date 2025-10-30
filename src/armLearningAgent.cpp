@@ -230,7 +230,7 @@ std::shared_ptr<Learn::EvaluationResult> Learn::ArmLearningAgent::evaluateJob(
     }
 
     if(trainingParams.testing){
-        // the testPath is outLogs by default
+        // the tpgDotPath is outLogs by default
         ((ArmLearnWrapper&)le).logTestingTrajectories(true, "outLogs");
     }
 

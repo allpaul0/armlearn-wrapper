@@ -42,7 +42,7 @@ int main(int argc, char** argv ){
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
-    auto dotfile = path + trainingParams.testPath;
+    auto dotfile = path + trainingParams.tpgDotPath;
 
     // Instantiate and init the learning agent
     Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
@@ -145,7 +145,7 @@ int main(int argc, char** argv ){
     dotExporter.print();
 
     File::TPGGraphDotImporter dotImporter((codeGenPath + "best_root_pruned.dot").c_str(), env, tpg);
-    trainingParams.testPath = (path + "outLogs").c_str();
+    trainingParams.tpgDotPath = (path + "outLogs").c_str();
     trainingParams.testing = true;
     la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
 

@@ -148,7 +148,7 @@ public:
 	bool testing = false;
 
     /// path to store the testing output
-    std::string testPath = "outLogs/best_root.dot";
+    std::string tpgDotPath = "outLogs/best_root.dot";
 
     std::string CodeGenPath = "outLogs/CodeGen";
 
