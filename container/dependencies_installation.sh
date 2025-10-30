@@ -94,11 +94,14 @@ git checkout my-v2-develop
 
 mkdir bin
 cd bin
-cmake -DCMAKE_BUILD_TYPE=Release .. 
+
+# Release print with debug exceptions
+cmake -DDEBUG_PROGRAM_EXCEPTIONS=ON ..
+
 make -j
 sudo make install
-cd ../..
 
+cd ../..
 
 # update libs
 sudo /sbin/ldconfig -v
