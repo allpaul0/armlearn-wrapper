@@ -19,21 +19,25 @@
 #define NB_VALUES_PER_CLASS 25 // number of occurences of each graph traversal we want to have
 // #define VERBOSE
 
-/* Pourquoi générer des seeds pour la traversée de graphe ?
+/* Pourquoi générer des seeds ou des états de l'environnement d'apprentissage pour mesurer les performances du TPG à l'inférence ?
 
-Dans le cadre des TPGs, une seed définit une position de l’environnement d’apprentissage utilisée pour l’évaluation. 
-Le script de génération de seeds sert à équilibrer les parcours de graphe, c’est-à-dire à garantir que chaque trajet 
-réalisable dans le graphe soit représenté le même nombre de fois.
+Dans le cadre des TPGs, une seed est utilisé pour initialiser un Pseudo Random Number Generator. Ce dernier génère l'ensemble d'états de départ
+de l’environnement d’apprentissage. A partir de ces états de départ, le TPG prend une action, ce qui modifie les états de l'environnement, ... 
 
-Lors de l’inférence, cependant, les TPGs manifestent une préférence pour certaines actions, et donc pour certains parcours. 
-Cela reflète leur capacité à s’adapter aux situations rencontrées dans l’environnement (par exemple sortir d’un blocage 
-contre un mur ou stabiliser un pendule inversé). Autrement dit, le graphe du TPG n’explore pas ses parcours de manière 
-équilibrée par défaut.
+De manière générale, lors de l’inférence, les TPGs optent statistiquement plus pour certaines actions, et donc pour certains parcours.
 
-Ce biais n’affecte pas directement la qualité de la réponse du TPG face à son environnement d’apprentissage. En revanche, 
-il complique l’évaluation des performances. En effet, si l’on se contente d’observer les parcours réellement suivis par 
-le TPG à partir de quelques positions tirées aléatoirement dans l’environnement, certaines actions/parcours seront 
-sous-représentés.
+Ce script sert à équilibrer les parcours de graphe TPG, c’est-à-dire à garantir que chaque parcours depuis un noeud root vers
+une feuille soit représenté le même nombre de fois dans le jeu de données. Ce jeu de données équilibré favorise une comparaison 
+équitable entre TPGs et autres algorithmes de GP. 
+
+La tendance des TPG à choisir d'avantage certains parcours reflète leur capacité à s’adapter aux situations rencontrées 
+dans l’environnement (par exemple sortir d’un blocage contre un mur ou stabiliser un pendule inversé). Autrement dit, le graphe du 
+TPG n’explore pas ses parcours de manière équilibrée par défaut.
+
+Ce biais n’affecte pas directement la qualité de la réponse du TPG face à son environnement d’apprentissage. 
+
+En revanche, il complique l’évaluation des performances. En effet, si l’on se contente d’observer les parcours réellement suivis par 
+le TPG à partir de quelques positions tirées aléatoirement dans l’environnement, certaines actions/parcours seront sous-représentés.
 
 Pour obtenir des statistiques fiables, il est donc nécessaire de mesurer chaque type de parcours le même nombre de fois, 
 y compris ceux qui seraient rares lors d’une exécution normale en inférence.
@@ -74,7 +78,7 @@ void print_mapITI(std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>
 int main(int argc, char *argv[])
 {
 
-    std::cout << "\033[1;33m=====[ Generate Seeds for Graph Traversal target ]=====\033[0m" << std::endl;
+    std::cout << "\033[1;33m=====[ export LE states for LE standalone InferenceBenchmark ]=====\033[0m" << std::endl;
 
 
     /*

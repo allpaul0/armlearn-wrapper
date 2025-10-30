@@ -80,7 +80,7 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainSeedsGraphTraversal.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainExportLEstates.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
@@ -197,14 +197,14 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h)
 list(APPEND
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/mainSeedsGraphTraversal.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/mainExportLEstates.cpp)
 
 
-# PreCalcul: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference of mainInferenceBenchmark.cpp
+# exportLEstates: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference of mainInferenceBenchmark.cpp
 # using graph traversal
-add_executable(PreCalcul ${armgegelati_files})
-target_link_libraries(PreCalcul ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-target_compile_definitions(PreCalcul PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+add_executable(exportLEstates ${armgegelati_files})
+target_link_libraries(exportLEstates ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(exportLEstates PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 
 # *******************************************
