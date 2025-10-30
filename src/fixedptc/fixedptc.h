@@ -328,7 +328,7 @@ fixedpt_cos(fixedpt A)
 static inline fixedpt
 fixedpt_tan(fixedpt A)
 {
-	return fixedpt_div(fixedpt_sin(A), fixedpt_cos(A));
+	return protected_fixedpt_div(fixedpt_sin(A), fixedpt_cos(A));
 }
 
 
@@ -362,7 +362,7 @@ fixedpt_exp(fixedpt fp)
 	    fixedpt_mul(z, EXP_P[0] + fixedpt_mul(z, EXP_P[1] +
 	    fixedpt_mul(z, EXP_P[2] + fixedpt_mul(z, EXP_P[3] +
 	    fixedpt_mul(z, EXP_P[4])))));
-	xp = FIXEDPT_ONE + fixedpt_div(fixedpt_mul(fp, FIXEDPT_TWO), R - fp);
+	xp = FIXEDPT_ONE + protected_fixedpt_div(fixedpt_mul(fp, FIXEDPT_TWO), R - fp);
 	if (k < 0)
 		k = FIXEDPT_ONE >> (-k >> FIXEDPT_FBITS);
 	else
@@ -416,7 +416,7 @@ fixedpt_ln(fixedpt x)
 static inline fixedpt
 fixedpt_log(fixedpt x, fixedpt base)
 {
-	return (fixedpt_div(fixedpt_ln(x), fixedpt_ln(base)));
+	return (protected_fixedpt_div(fixedpt_ln(x), fixedpt_ln(base)));
 }
 
 
