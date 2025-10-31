@@ -80,37 +80,7 @@ int main(int argc, char *argv[])
 
     std::cout << "\033[1;33m=====[ export LE states for LE standalone InferenceBenchmark ]=====\033[0m" << std::endl;
 
-
-    /*
-     * This program needs 2 arguments :
-     * - argv[1] : path to the .dot file of the TPG to be used, if relative path, starts from call pwd
-     * - argv[2] : seed to intialize the PRNG
-     */
-
-    /* Checking arguments */
-
-    if (argc < 3)
-    {
-        std::cerr << "Missing arguments, this program needs (in order) : the path to the .dot file, a seed." << std::endl;
-        exit(1);
-    }
-
-    std::filesystem::path dotPath(argv[1]);
-    unsigned int initial_seed_RNG;
     int nbSeedsToSearch = DEFAULT_NB_SEEDS_TO_SEARCH;
-
-    try
-    {
-        initial_seed_RNG = (unsigned int)std::stoi(argv[2]);
-    }
-    catch (const std::invalid_argument &e)
-    {
-        std::cerr << "seed is not an int" << std::endl;
-        exit(1);
-    }
-
-    // Set the seed for the RNG
-    srand(initial_seed_RNG);
 
     /* Settings */
 
@@ -144,9 +114,9 @@ int main(int argc, char *argv[])
     Environment env(set, params, armLE.getDataSources());
     
     // Load graph from dot file
-
+    auto dotfile = trainingParams.tpgDotPath;
     TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
-    File::TPGGraphDotImporter tpgGraphDotImporter(dotPath.c_str(), env, tpgGraph);
+    File::TPGGraphDotImporter tpgGraphDotImporter((dotfile).c_str(), env, tpgGraph);
     tpgGraphDotImporter.importGraph();
 
     /* Prepare for inference, retrieve root and execution engine */
