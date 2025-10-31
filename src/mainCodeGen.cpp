@@ -17,8 +17,8 @@ int main(int argc, char** argv ){
 
     std::string path = "";
 
-    // Check if outLogs/CodeGen exists, if not, create it
-    std::string codeGenPath = (path + "outLogs/CodeGen/").c_str();
+    // Check if outLogs/codegen exists, if not, create it
+    std::string codeGenPath = (path + "outLogs/codegen/").c_str();
     if(!std::filesystem::exists(codeGenPath)){
         std::filesystem::create_directories(codeGenPath);
     }

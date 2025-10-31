@@ -307,11 +307,11 @@ int main(int argc, char *argv[])
     std::cout << "\n\033[1;34m----- Final status of mapITI -----\033[0m\n";
     print_mapITI(mapITI);
 
-    // create outLogs/PreCalcul directory if it does not exist
-    std::filesystem::create_directories("outLogs/PreCalcul");
+    // create outLogs/precalul directory if it does not exist
+    std::filesystem::create_directories("outLogs/precalul");
 
     // Write data to CSV file
-    storeToHeaderFile("outLogs/PreCalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
+    storeToHeaderFile("outLogs/precalul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
 
     // Empty the vec of InferenceTraceInfos from executionInfos which has current TPG execution context in it
     executionInfos.clear();
@@ -325,8 +325,8 @@ int main(int argc, char *argv[])
     }
     
     executionInfos.setVecInferenceTraceInfos(overallInfTraceInfos);
-    executionInfos.writeTPGtoJson("outLogs/PreCalcul/tpgInfos.json");
-    executionInfos.writeInfosToJson("outLogs/PreCalcul/executionInfos.json");
+    executionInfos.writeTPGtoJson("outLogs/precalul/tpgInfos.json");
+    executionInfos.writeInfosToJson("outLogs/precalul/executionInfos.json");
 
     std::cout << "End program" << std::endl;
 

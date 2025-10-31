@@ -52,6 +52,6 @@ int main() {
     }
     scoreOrig /= 100;
     constexpr bool USING_GEGELATI = true; 
-    armLearnEnv.logTestingTrajectories(USING_GEGELATI, "outLogs/CodeGen");
+    armLearnEnv.logTestingTrajectories(USING_GEGELATI, "outLogs/codeGen");
     std::cout << "Total score: " << scoreOrig << std::endl;
 }

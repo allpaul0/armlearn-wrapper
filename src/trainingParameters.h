@@ -150,7 +150,7 @@ public:
     /// path to store the testing output
     std::string tpgDotPath = "outLogs/best_root.dot";
 
-    std::string CodeGenPath = "outLogs/CodeGen";
+    std::string CodeGenPath = "outLogs/codegen";
 
     // if true, use trigonometric functions in the instructions
 	bool useInstrTrig = true;
