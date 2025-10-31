@@ -200,7 +200,7 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mainExportLEstates.cpp)
 
 
-# exportLEstates: generate seeds in PreCalcul/seeds_nbActionsToTerminal.h for inference of mainInferenceBenchmark.cpp
+# exportLEstates: generate seeds in PreCalcul/LE_states.h for inference of mainInferenceBenchmark.cpp
 # using graph traversal
 add_executable(exportLEstates ${armgegelati_files})
 target_link_libraries(exportLEstates ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)

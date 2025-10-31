@@ -57,7 +57,7 @@ y compris ceux qui seraient rares lors d’une exécution normale en inférence.
 bool randomizeSeeds = true;
 
 /// @brief Function to write the content of inferenceTraceInfos to a C Header file called
-/// seeds_nbActoinsToTerminal.h, used to write starting position of the angle, velocity of the
+/// LE_states.h, used to write starting position of the angle, velocity of the
 /// Learning Environment 
 void storeToHeaderFile(
     const std::string &filename,
@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
     std::filesystem::create_directories("outLogs/PreCalcul");
 
     // Write data to CSV file
-    storeToHeaderFile("outLogs/PreCalcul/seeds_nbActionsToTerminal.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
+    storeToHeaderFile("outLogs/PreCalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
 
     // Empty the vec of InferenceTraceInfos from executionInfos which has current TPG execution context in it
     executionInfos.clear();
