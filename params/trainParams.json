@@ -33,6 +33,7 @@
     "useInstrLogExp": false,
     "useInstrComparison": true,
     "useInstrExpensiveArithmetic": true,
+    "useInstrZmmul": false,
     "actionSpeed": false,
     "realSimulation": true,
     "nbIterationTraining": 100,

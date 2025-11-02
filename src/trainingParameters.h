@@ -164,6 +164,9 @@ public:
     // if true, use expensive arithmetic instructions
     bool useInstrExpensiveArithmetic = true;
 
+    // if true, use multiplication instruction, no division 
+    bool useInstrZmmul = true;
+
     // type of instruction used in the algorithm
     std::string instrType = "double";
 

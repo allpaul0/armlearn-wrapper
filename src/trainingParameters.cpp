@@ -204,6 +204,12 @@ void TrainingParameters::setParameterFromString(const std::string& param, Json::
         return;
     }
 
+    if (param == "useInstrZmmul") {
+        useInstrZmmul = (bool)value.asBool();
+        return;
+    }
+
+
     if (param == "instrType") {
         std::string type = value.asString();
         if (type == "int" || type == "float" || type == "double" || type == "fixedpt") {
