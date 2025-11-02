@@ -167,6 +167,9 @@ public:
     // if true, use multiplication instruction, no division 
     bool useInstrZmmul = true;
 
+    // if true, use exp2 and log2 (implemented as rshift and lshift) HW approx of exp and ln
+    bool useInstrLog2Exp2 = true;
+
     // type of instruction used in the algorithm
     std::string instrType = "double";
 

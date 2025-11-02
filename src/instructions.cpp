@@ -114,16 +114,21 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
         auto tan = [](double a) -> double { return fixedpt_to_double(fixedpt_tan(double_to_fixedpt(a))); };
         auto exp = [](double a) -> double { return fixedpt_to_double(fixedpt_exp(double_to_fixedpt(a))); };
         auto log = [](double a) -> double { return fixedpt_to_double(fixedpt_ln(double_to_fixedpt(a))); };
+        auto exp2 = [](double a) -> double { return fixedpt_to_double(f_pow2(double_to_fixedpt(a))); };
+        auto log2 = [](double a) -> double { return fixedpt_to_double(f_log2(double_to_fixedpt(a))); };
 
         set.add(*(new Instructions::LambdaInstruction<double, double>(add, "$0 = $1 + $2;")));
         set.add(*(new Instructions::LambdaInstruction<double, double>(minus, "$0 = $1 - $2;")));
+       
         if(params.useInstrExpensiveArithmetic) {
             set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = fixedpt_mul($1,$2);")));
             set.add(*(new Instructions::LambdaInstruction<double, double>(divide, "$0 = protected_fixedpt_div($1,$2);")));
         }
+        
         if(!params.useInstrExpensiveArithmetic && params.useInstrZmmul){
             set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = fixedpt_mul($1,$2);")));
         }
+        
         if(params.useInstrComparison) {
             set.add(*(new Instructions::LambdaInstruction<double, double>(max, "$0 = ($1 > $2) ? $1 : $2;")));
         }
@@ -137,6 +142,11 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
         if(params.useInstrLogExp) {
             set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = fixedpt_ln($1);")));
             set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = fixedpt_exp($1);")));
+        }
+
+        if(params.useInstrLog2Exp2) {
+            set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = f_log2($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = f_pow2($1);")));
         }
     }
 }

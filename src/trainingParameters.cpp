@@ -209,6 +209,11 @@ void TrainingParameters::setParameterFromString(const std::string& param, Json::
         return;
     }
 
+    if (param == "useInstrLog2Exp2") {
+        useInstrLog2Exp2 = (bool)value.asBool();
+        return;
+    }
+
 
     if (param == "instrType") {
         std::string type = value.asString();
