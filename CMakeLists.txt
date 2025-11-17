@@ -68,6 +68,8 @@ file(GLOB_RECURSE
         )
 list(REMOVE_ITEM
         armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnLogger.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearnEvaluationResult.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp
