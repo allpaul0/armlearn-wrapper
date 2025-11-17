@@ -10,7 +10,7 @@
 #include "precalcul/LE_states.h"
 #include "codegen/TPG.h"
 
-#define NB_ACTIONS_INF 1E2
+#define NB_ACTIONS_INF 1E4
 
 // Local static buffers that will hold the values the generated code reads.
 // Their lifetime is static so the pointers we give to the generated engine remain valid.
