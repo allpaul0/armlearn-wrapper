@@ -145,8 +145,8 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
         }
 
         if(params.useInstrLog2Exp2) {
-            set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = f_log2($1);")));
-            set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = f_pow2($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(log2, "$0 = f_log2($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(exp2, "$0 = f_pow2($1);")));
         }
     }
 }
