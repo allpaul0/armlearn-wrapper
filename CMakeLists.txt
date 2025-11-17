@@ -199,6 +199,8 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h)
 list(APPEND
         armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearnEvaluationResult.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnLogger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mainExportLEstates.cpp)
 
 
