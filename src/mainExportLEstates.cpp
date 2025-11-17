@@ -14,9 +14,9 @@
 #include "armLearningAgent.h"
 #include "codegen/externHeader.h"
 
-#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 // number of seeds used to find graph traversals
-#define MAX_NB_SEEDS_TO_SEARCH 2E2 // to avoid infinite loop in complex LE and TPG
-#define NB_VALUES_PER_CLASS 25 // number of occurences of each graph traversal we want to have
+#define DEFAULT_NB_SEEDS_TO_SEARCH 1E1 //2E2 // number of seeds used to find graph traversals
+#define MAX_NB_SEEDS_TO_SEARCH 2E1 //2E2 // to avoid infinite loop in complex LE and TPG
+#define NB_VALUES_PER_CLASS 10 //25 // number of occurences of each graph traversal we want to have
 // #define VERBOSE
 
 /* Pourquoi générer des seeds ou des états de l'environnement d'apprentissage pour mesurer les performances du TPG à l'inférence ?
@@ -436,19 +436,32 @@ void storeToHeaderFile(
     for (const auto& info : dataSourcesInfo) {
         file << "// " << info.name << "\n";
         for (size_t i = 0; i < info.size; ++i, ++featureIdx) {
-            file << "static const typeInf dataSourcesLE_" << featureIdx << "[NB_SEED] = {";
-            for (size_t j = 0; j < indices.size(); j++) {
-                if (j > 0) file << ", ";
-                file << convEnvToInf(dataSources[indices[j]][featureIdx]);
+
+            file << "static const typeInf dataSourcesLE_" << featureIdx;
+
+            // Si featureIdx est entre 9 et 14 => tableau de taille 1
+            if ((featureIdx >= 9 && featureIdx <= 14) || (featureIdx >= 3 && featureIdx <= 5)) {
+                file << "[1] = { ";
+                // seule première valeur
+                file << convEnvToInf(dataSources[indices[0]][featureIdx]);
+                file << " };\n";
             }
-            file << "};\n";
+            else {
+                // comportement normal
+                file << "[NB_SEED] = {";
+                for (size_t j = 0; j < indices.size(); j++) {
+                    if (j > 0) file << ", ";
+                    file << convEnvToInf(dataSources[indices[j]][featureIdx]);
+                }
+                file << "};\n";
+            }
         }
     }
     file << "\n";
 
 
     // Write seeds
-    file << "static const uint64_t seeds[NB_SEED] = {";
+    file << "// static const uint64_t seeds[NB_SEED] = {";
     for (size_t i = 0; i < indices.size(); i++)
     {
         if (i > 0){
