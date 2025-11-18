@@ -461,7 +461,7 @@ void storeToHeaderFile(
 
 
     // Write seeds
-    file << "// static const uint64_t seeds[NB_SEED] = {";
+    file << "static const uint32_t seeds[NB_SEED] = {";
     for (size_t i = 0; i < indices.size(); i++)
     {
         if (i > 0){
