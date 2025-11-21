@@ -58,6 +58,8 @@ README-LEARNING-STRATEGY.md
 
 ## Learning Environment supports multiple types at Inference 
 
+> ⚠️ **Warning:** (multiple types supported at Inference only not during Training or CodeGen)
+
 The Learning Environment can be interfaced with the following types when performing inference **{double, float, int, fixedpt}**. 
 Its up to you to **provide a TPG that uses those types** to do its internal computation. TPG code should be inserted in src/codegen. 
 
