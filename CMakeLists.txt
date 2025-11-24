@@ -32,7 +32,8 @@ else()
 endif()
 
 # Allow additional flags to be passed at make time
-# E.g. CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake
+# for InferenceBenchmark target
+# E.g. CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXXFLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} $ENV{CFLAGS}")
 
@@ -68,8 +69,6 @@ file(GLOB_RECURSE
         )
 list(REMOVE_ITEM
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnLogger.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearnEvaluationResult.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainGrabStandalone.cpp
@@ -148,7 +147,6 @@ add_executable(InferenceBenchmark ${armgegelati_files})
 target_link_libraries(InferenceBenchmark ${GEGELATI_LIBRARIES})
 target_compile_definitions(InferenceBenchmark PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
-# armGrabGegelati: Control the robotic arm with gegelati.
 list(REMOVE_ITEM
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
@@ -164,7 +162,7 @@ list(APPEND
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h
-                ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
 )
 
 
@@ -199,8 +197,6 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.h)
 list(APPEND
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearnEvaluationResult.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnLogger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mainExportLEstates.cpp)
 
 
