@@ -9,6 +9,7 @@ extern "C" {
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "../fixedptc/fixedptc.h"
+#include "../approximateComputingTools.h"
 
 #ifdef USE_INT
   #warning "Using int as typeInf"
