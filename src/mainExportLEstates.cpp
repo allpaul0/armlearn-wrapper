@@ -14,8 +14,8 @@
 #include "armLearningAgent.h"
 #include "codegen/externHeader.h"
 
-#define DEFAULT_NB_SEEDS_TO_SEARCH 1E1 //2E2 // number of seeds used to find graph traversals
-#define MAX_NB_SEEDS_TO_SEARCH 2E1 //2E2 // to avoid infinite loop in complex LE and TPG
+#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 //2E2 // number of seeds used to find graph traversals
+#define MAX_NB_SEEDS_TO_SEARCH 2E2 //2E2 // to avoid infinite loop in complex LE and TPG
 #define NB_VALUES_PER_CLASS 10 //25 // number of occurences of each graph traversal we want to have
 // #define VERBOSE
 
@@ -307,11 +307,11 @@ int main(int argc, char *argv[])
     std::cout << "\n\033[1;34m----- Final status of mapITI -----\033[0m\n";
     print_mapITI(mapITI);
 
-    // create outLogs/precalul directory if it does not exist
-    std::filesystem::create_directories("outLogs/precalul");
+    // create outLogs/precalcul directory if it does not exist
+    std::filesystem::create_directories("outLogs/precalcul");
 
     // Write data to CSV file
-    storeToHeaderFile("outLogs/precalul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
+    storeToHeaderFile("outLogs/precalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
 
     // Empty the vec of InferenceTraceInfos from executionInfos which has current TPG execution context in it
     executionInfos.clear();
@@ -325,8 +325,8 @@ int main(int argc, char *argv[])
     }
     
     executionInfos.setVecInferenceTraceInfos(overallInfTraceInfos);
-    executionInfos.writeTPGtoJson("outLogs/precalul/tpgInfos.json");
-    executionInfos.writeInfosToJson("outLogs/precalul/executionInfos.json");
+    executionInfos.writeTPGtoJson("outLogs/precalcul/tpgInfos.json");
+    executionInfos.writeInfosToJson("outLogs/precalcul/executionInfos.json");
 
     std::cout << "End program" << std::endl;
 
