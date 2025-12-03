@@ -20,7 +20,7 @@
     "coefRewardMultiplication": 0.01,
     "loadValidationTrajectories": false,
     "saveValidationTrajectories": false,
-    "seed": 0,
+    "seed": 2,
     "interactiveMode": false,
     "bonusNbIteration": true,
     "meanScoreWithStd": false,
@@ -28,13 +28,13 @@
     "sizeAction": 10,
     "testing": false,
     "tpgDotPath": "outLogs/best_root.dot",
-    "instrType": "double",
+    "instrType": "fixedpt",
     "useInstrTrig": false,
     "useInstrLogExp": false,
     "useInstrComparison": true,
-    "useInstrExpensiveArithmetic": true,
+    "useInstrExpensiveArithmetic": false,
     "useInstrZmmul": false,
-    "useInstrLog2Exp2": false,
+    "useInstrLog2Exp2": true,
     "actionSpeed": false,
     "realSimulation": true,
     "nbIterationTraining": 100,
@@ -42,5 +42,5 @@
     "nbIterationRootCanceled": 100,
     "canDo360": false,
     "killIfCollision": true,
-    "instrSetName": "comp"
+    "instrSetName": "compBare"
 }
