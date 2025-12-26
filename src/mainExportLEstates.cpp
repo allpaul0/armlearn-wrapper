@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
 
     TrainingParameters trainingParams;
     trainingParams.loadParametersFromJson("params/trainParams.json");
-
     // Instruction set
     Instructions::Set set;
     fillInstructionSet(set, trainingParams);
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])
     Environment env(set, params, armLE.getDataSources());
     
     // Load graph from dot file
-    auto dotfile = trainingParams.tpgDotPath;
+    auto dotfile = trainingParams.tpgDotPathInference;
     TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
     File::TPGGraphDotImporter tpgGraphDotImporter((dotfile).c_str(), env, tpgGraph);
     tpgGraphDotImporter.importGraph();
@@ -126,6 +125,15 @@ int main(int argc, char *argv[])
 
     // Retrieve execution engine
     TPG::TPGExecutionEngineInstrumented tee(env);
+
+    const TPG::TPGFactoryInstrumented* factoryInstrumented = 
+        dynamic_cast<const TPG::TPGFactoryInstrumented*>(&tpgGraph.getFactory());
+    
+    if (!factoryInstrumented) {
+        throw std::runtime_error("Error: TPGFactory is not of type TPGFactoryInstrumented.");
+    }
+
+    factoryInstrumented->resetTPGGraphCounters(tpgGraph);
 
 
     /* Prepare to retrieve graph traversal informations */
@@ -180,6 +188,8 @@ int main(int argc, char *argv[])
                 std::vector<double> extracted = extractAllDoubles(handler);
                 dataSourcesLE.insert(dataSourcesLE.end(), extracted.begin(), extracted.end());
             }
+
+            factoryInstrumented->resetTPGGraphCounters(tpgGraph);
 
             // execute one action, trace it, and move to the next seed.
             tee.executeFromRoot(*root);

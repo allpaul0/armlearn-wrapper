@@ -179,10 +179,16 @@ void TrainingParameters::setParameterFromString(const std::string& param, Json::
         return;
     }
 
-    if (param == "tpgDotPath") {
-        tpgDotPath = (std::string)value.asString();
+    if (param == "tpgDotPathTraining") {
+        tpgDotPathTraining = (std::string)value.asString();
         return;
     }
+
+     if (param == "tpgDotPathInference") {
+        tpgDotPathInference = (std::string)value.asString();
+        return;
+    }
+
 
     if (param == "useInstrTrig") {
         useInstrTrig = (bool)value.asBool();

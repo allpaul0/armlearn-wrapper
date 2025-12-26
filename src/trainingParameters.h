@@ -148,7 +148,9 @@ public:
 	bool testing = false;
 
     /// path to store the testing output
-    std::string tpgDotPath = "outLogs/best_root.dot";
+    std::string tpgDotPathTraining = "outLogs/best_root.dot";
+
+    std::string tpgDotPathInference = "outLogs/codegen/best_root_pruned.dot";
 
     std::string CodeGenPath = "outLogs/codegen";
 
@@ -165,10 +167,10 @@ public:
     bool useInstrExpensiveArithmetic = true;
 
     // if true, use multiplication instruction, no division 
-    bool useInstrZmmul = true;
+    bool useInstrZmmul = false;
 
     // if true, use exp2 and log2 (implemented as rshift and lshift) HW approx of exp and ln
-    bool useInstrLog2Exp2 = true;
+    bool useInstrLog2Exp2 = false;
 
     // type of instruction used in the algorithm
     std::string instrType = "double";

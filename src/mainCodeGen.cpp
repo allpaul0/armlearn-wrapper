@@ -42,7 +42,7 @@ int main(int argc, char** argv ){
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
-    auto dotfile = path + trainingParams.tpgDotPath;
+    auto dotfile = path + trainingParams.tpgDotPathTraining;
 
     // Instantiate and init the learning agent
     Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
@@ -145,7 +145,13 @@ int main(int argc, char** argv ){
     dotExporter.print();
 
     File::TPGGraphDotImporter dotImporter((codeGenPath + "best_root_pruned.dot").c_str(), env, tpg);
-    trainingParams.tpgDotPath = (path + "outLogs").c_str();
+    // 1. Compare the TPGGraph objects themselves (pointer equality)
+    std::cout << "Comparing imported dot file to pruned TPGGraph." << std::endl;
+    if (la.getTPGGraph().get() == &tpg)
+        std::cout << "Dot import/export works correctly." << std::endl;
+    else
+        std::cout << "Dot import/export does not work correctly." << std::endl;
+
     trainingParams.testing = true;
     la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
 
