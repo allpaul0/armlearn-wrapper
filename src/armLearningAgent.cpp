@@ -106,35 +106,38 @@ void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
 
 void Learn::ArmLearningAgent::testingBestRoot(uint64_t generationNumber){
 
-    std::shared_ptr<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> checkpoint;
-    checkpoint = std::make_shared<std::chrono::time_point<
-    std::chrono::system_clock, std::chrono::nanoseconds>>(std::chrono::system_clock::now());
-
     auto mode = Learn::LearningMode::VALIDATION;
 
     // Create the TPGExecutionEngine for this evaluation.
     // The engine uses the Archive only in training mode.
     std::unique_ptr<TPG::TPGExecutionEngine> tee =
-        this->tpg->getFactory().createTPGExecutionEngine(
-            this->env, NULL);
+        this->tpg->getFactory().createTPGExecutionEngine(this->env, NULL);
 
     auto roots = tpg->getRootVertices();
 
     auto job = makeJob(roots.at(0), mode);
+
     this->archive.setRandomSeed(job->getArchiveSeed());
-    std::shared_ptr<EvaluationResult> result = this->evaluateJob(
-        *tee, *job, generationNumber, mode, this->learningEnvironment);
 
+    std::shared_ptr<EvaluationResult> result;
 
+    auto start = std::chrono::high_resolution_clock::now();
 
-    std::cout<<"Testing score : "<<result->getResult();
-    std::cout << " -- Testing success rate " << std::dynamic_pointer_cast<ArmlearnEvaluationResult>(result)->getSuccess();
+    result = this->evaluateJob(*tee, *job, generationNumber, mode, this->learningEnvironment);
 
-    auto testingTime = ((std::chrono::duration<double>)(std::chrono::system_clock::now() - *checkpoint)).count();
-    std::cout<<" -- Time of testing "<<testingTime<<std::endl;
+    auto end = std::chrono::high_resolution_clock::now();
 
+    //Calculate the duration
+    std::chrono::duration<double> duration = end - start;
 
+    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
 
+    //duration = duration / 1e3; 
+    std::cout<<"Testing score : " <<  result->getResult();
+    std::cout << " -- Testing success rate " <<  std::dynamic_pointer_cast<ArmlearnEvaluationResult>(result)->getSuccess();
+
+    std::cout<<" -- Test duration : " << duration.count() << " seconds ("
+             << microseconds / 1e3 << " microseconds over 1000 runs)"<<std::endl;
 }
 
 std::shared_ptr<Learn::EvaluationResult> Learn::ArmLearningAgent::evaluateJob(
