@@ -146,7 +146,7 @@ int main(){
         auto &tpg = *la.getTPGGraph();
         Environment env(set, params, armLearnEnv.getDataSources());
         File::TPGGraphDotImporter dotImporter((path + "outLogs/best_root.dot").c_str(), env, tpg);
-        trainingParams.tpgDotPath = (path + "outLogs").c_str();
+        trainingParams.tpgDotPathTraining = (path + "outLogs").c_str();
         trainingParams.testing = true;
         la.testingBestRoot(globalParams.nbIterationsPerPolicyEvaluation);
 
