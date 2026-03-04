@@ -64,14 +64,45 @@ The Learning Environment can be interfaced with the following types when perform
 Its up to you to **provide a TPG that uses those types** to do its internal computation. TPG code should be inserted in src/codegen. 
 
 To **compile the Learning Environment for a specific type**, a preprocessor directive must be used. CMake can therefore be configured to pass this directive at compile time. 
-```
-cp -r my/tpg/codegen/TPG* src/codegen/.
-mkdir build & &cd build
-CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
-make InferenceBenchmark
-```
 
 There is currently a LE for training and codegen that uses doubles and a LE for inference that can be configured and compiled for a specific type. 
+
+### Inference
+
+```
+# move codegen files from the outLogs/codegen folder to src/codegen
+# needs TPG.c TPG.h TPG_programs.h externHeader.cpp externHeader.h
+mkdir build && cd build
+CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
+make InferenceBenchmark
+cd ..
+./build/InferenceBenchmark
+```
+
+### Training
+
+```
+# prepare the params folder:
+# adapt instructions.cpp 
+# needs AllTarget.csv, ValidationTrajectories, params.json, trainParams.json
+mkdir build && cd build
+cmake ..
+make Training
+cd ..
+./build/Training
+```
+
+### CodeGen
+
+```
+# prepare the outLogs folder
+# needs best_root.dot produced by the training phase
+mkdir build && cd build
+cmake ..
+make CodeGen
+cd ..
+./build/CodeGen
+```
 
 ## enter container 
 apptainer run --bind $YOUR_WORKING_DIR/params:/params/ --bind $YOUR_WORKING_DIR/outLogs:/outLogs/ $USER/armlearn-wrapper/container/gegelati-armlearn.sif
