@@ -34,17 +34,23 @@ static inline fixedpt f_pow2(fixedpt si_b) {
   return result;
 }
 
-
-static inline fixedpt f_log2(fixedpt si_a)
-{    
-  fixedpt result = 0;    
-	
-  if(si_a > 0) {
-		for (result = 0; si_a > 1; result++, si_a >>= 1);
-	}
-  
-  return result;
+static inline __attribute__((always_inline)) fixedpt f_log2(fixedpt n) {
+    if (n <= 0) {
+        return 0; // Handle error for non-positive input
+    }
+    return 31 - __builtin_clz(n);
 }
+
+// static inline fixedpt f_log2(fixedpt si_a)
+// {    
+//   fixedpt result = 0;    
+	
+//   if(si_a > 0) {
+// 		for (result = 0; si_a > 1; result++, si_a >>= 1);
+// 	}
+  
+//   return result;
+// }
 
 // inline int f_pow2(int si_b) {
 //   int result;
