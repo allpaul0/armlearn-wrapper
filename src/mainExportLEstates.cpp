@@ -34,12 +34,11 @@ La tendance des TPG à choisir d'avantage certains parcours reflète leur capaci
 dans l’environnement (par exemple sortir d’un blocage contre un mur ou stabiliser un pendule inversé). Autrement dit, le graphe du 
 TPG n’explore pas ses parcours de manière équilibrée par défaut.
 
-Ce biais n’affecte pas directement la qualité de la réponse du TPG face à son environnement d’apprentissage. 
-
-En revanche, il complique l’évaluation des performances. En effet, si l’on se contente d’observer les parcours réellement suivis par 
+Cette réponse du TPG face à son environnement d’apprentissage compique l’évaluation des performances. 
+En effet, si l’on se contente d’observer les parcours réellement suivis par 
 le TPG à partir de quelques positions tirées aléatoirement dans l’environnement, certaines actions/parcours seront sous-représentés.
 
-Pour obtenir des statistiques fiables, il est donc nécessaire de mesurer chaque type de parcours le même nombre de fois, 
+Pour obtenir des statistiques fiables et équitables il est donc nécessaire de mesurer chaque type de parcours le même nombre de fois, 
 y compris ceux qui seraient rares lors d’une exécution normale en inférence.
 */
 
