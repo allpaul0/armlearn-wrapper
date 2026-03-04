@@ -44,4 +44,4 @@ Pour être sûr que des coordonnées données soient atteignables par le bras, i
 - Deplacement vers des coordonnées spécifiées par l'utilisateur avec le bras "physique". (runRealArmByHand)
 
 
-notes from Quentin Vacher.
+notes from Pierre-Yves Rolland.
