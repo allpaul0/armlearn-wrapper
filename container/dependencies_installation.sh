@@ -94,7 +94,7 @@ git checkout my-v2-develop-model
 
 mkdir bin
 cd bin
-cmake -DCMAKE_BUILD_TYPE=Release .. 
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCODE_GEN=ON -DSKIP_DOXYGEN_BUILD=ON
 make -j
 sudo make install
 cd ../..
