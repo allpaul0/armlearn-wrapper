@@ -90,7 +90,7 @@ cd ../..
 echo "# Install Gegelati"
 git clone https://github.com/allpaul0/gegelati.git
 cd gegelati
-git checkout my-v2-develop
+git checkout my-v2-develop-model
 
 mkdir bin
 cd bin
