@@ -12,12 +12,20 @@
 
 #define NB_ACTIONS_INF 1E4
 
-// Local static buffers that will hold the values the generated code reads.
-// Their lifetime is static so the pointers we give to the generated engine remain valid.
-static typeInf in1_buf[3];
-static typeInf in2_buf[3];
-static typeInf in3_buf[3];
-static typeInf in4_buf[6];
+// const typeInf * restrict inX
+// Global pointers that generated code will use to access the input values for each inference
+// const and restrict qualifiers are used to allow for better optimization by the compiler, 
+// as generated code will only read from these pointers and they won't alias with anything else
+typeInf* in1;
+typeInf* in2;
+typeInf* in3;
+typeInf* in4;
+
+// Buffers to hold the input values for each inference, so we can point the global pointers at them
+typeInf in1_buf[3];
+typeInf in2_buf[3];
+typeInf in3_buf[3];
+typeInf in4_buf[6];
 
 /* Fill the buffers with values for the given seed and point the global pointers
    at those buffers so generated code can use in1[0], in1[1], ... */
@@ -67,7 +75,7 @@ int main()
         start = std::chrono::high_resolution_clock::now();
         for (int j = 0; j < NB_ACTIONS_INF; j++)
         {
-            inferenceTPG(&actionID);
+            inferenceTPG(&actionID, in1, in2, in3, in4);
         }
         end = std::chrono::high_resolution_clock::now();
 

@@ -1,6 +1,6 @@
 /**
  * File generated with GEGELATI v2.0.0
- * On the 2025-12-26 19:52:57
+ * On the 2025-11-21 13:02:17
  * With the CodeGen::TPGGenerationEngine.
  */
 
@@ -24,7 +24,11 @@ extern "C" {
 
 #include "externHeader.h"
 
-void inferenceTPG(double* actions);
+void inferenceTPG(typeInf* actions, 
+					const typeInf *  in1,
+                	const typeInf *  in2,
+					const typeInf *  in3,
+                	const typeInf *  in4);
 
 #ifdef __cplusplus
 }

@@ -21,14 +21,9 @@ extern "C" {
   #warning "Using fixedpt as typeInf"
   typedef fixedpt  typeInf;  // using fixedptc library
 #else  // default
-  #warning "Using double as typeInf"
-  typedef double    typeInf;
+  #warning "Using float as typeInf"
+  typedef float    typeInf;
 #endif
-
-  extern typeInf* in1;
-  extern typeInf* in2;
-  extern typeInf* in3;
-  extern typeInf* in4;
 
   inline typeInf convEnvToInf(double input){
     #ifdef USE_FIXEDPT

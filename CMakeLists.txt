@@ -137,6 +137,8 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
 
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+
         )
 list(APPEND
         armgegelati_files
