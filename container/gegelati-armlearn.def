@@ -13,10 +13,11 @@ alias sudo=eval
 # get arm learn, custom int version
 git clone --recurse-submodules https://github.com/allpaul0/armlearn-wrapper.git
 cd armlearn-wrapper
-git checkout intEvaluation 
+git checkout model 
 
 # install dependencies
 yes | . container/dependencies_installation.sh
 
 # build wrapper
-mkdir build && cd build && cmake .. && cmake --build .
+mkdir build && cd build && cmake .. 
+#&& cmake --build .
