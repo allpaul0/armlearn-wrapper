@@ -32,6 +32,14 @@ extern "C" {
       return ((typeInf) input);
   }
 
+  inline double convInfToEnv(typeInf input){
+    #ifdef USE_FIXEDPT
+      return fixedpt_to_double(input);
+    #else
+      return (double) input;
+    #endif
+  }
+
 #ifdef __cplusplus
 }
 #endif
