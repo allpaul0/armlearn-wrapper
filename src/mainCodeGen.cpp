@@ -156,8 +156,8 @@ int main(int argc, char** argv ){
     la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
 
     std::cout << "Printing C code." << std::endl;
-	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::switchMode);
-    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath);
+	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::gotoMode);
+    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath, true, true);
     tpggen->generateTPGGraph();
 
     return 0;
