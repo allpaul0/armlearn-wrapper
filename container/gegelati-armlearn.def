@@ -19,5 +19,4 @@ git checkout model
 yes | . container/dependencies_installation.sh
 
 # build wrapper
-mkdir build && cd build && cmake .. 
-#&& cmake --build .
+mkdir build && cd build && cmake .. && cmake --build .
