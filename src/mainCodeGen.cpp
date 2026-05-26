@@ -157,7 +157,9 @@ int main(int argc, char** argv ){
 
     std::cout << "Printing C code." << std::endl;
 	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::gotoMode);
-    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath, true, true);
+    bool isInstrumented = true; bool isDecorated = true;
+    std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath, 
+                                                    trainingParams.instrType, isInstrumented, isDecorated);
     tpggen->generateTPGGraph();
 
     return 0;
