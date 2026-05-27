@@ -19,10 +19,10 @@ extern "C" {
   typedef float  typeInf;
 #elif defined(USE_FIXEDPT)
   #warning "Using fixedpt as typeInf"
-  typedef fixedpt  typeInf;  // using fixedptc library
+  typedef fixedpt typeInf;  // using fixedptc library
 #else  // default
   #warning "Using float as typeInf"
-  typedef float    typeInf;
+  typedef float typeInf;
 #endif
 
   inline typeInf convEnvToInf(double input){

@@ -55,7 +55,7 @@ protected:
 
     int valKillCollision = 0;
 
-    void computeInput();
+    virtual void computeInput();
 
     double computeReward(bool givePenaltyMoveUnavailable, int nbMotorMoving);
 
@@ -254,7 +254,7 @@ public:
     }
 
     /// @brief Destructor
-    ~ArmLearnWrapper() {
+    virtual ~ArmLearnWrapper() {
         delete this->device;
         delete this->converter;
     };

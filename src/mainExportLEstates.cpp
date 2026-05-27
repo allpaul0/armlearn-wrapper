@@ -62,7 +62,8 @@ void storeToHeaderFile(
     const std::string &filename,
     const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
     const std::vector<DataSourceInfo>& dataSourcesInfo,
-    bool randomize);
+    bool randomize, 
+    TrainingParameters trainingParams);
 
 /// @brief Function to extract all doubles from a DataHandler
 /// @param handler the DataHandler to extract doubles from
@@ -320,7 +321,7 @@ int main(int argc, char *argv[])
     std::filesystem::create_directories("outLogs/precalcul");
 
     // Write data to CSV file
-    storeToHeaderFile("outLogs/precalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds);
+    storeToHeaderFile("outLogs/precalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds, trainingParams);
 
     // Empty the vec of InferenceTraceInfos from executionInfos which has current TPG execution context in it
     executionInfos.clear();
@@ -378,7 +379,8 @@ void storeToHeaderFile(
     const std::string &filename,
     const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
     const std::vector<DataSourceInfo>& dataSourcesInfo,
-    bool randomize)
+    bool randomize,
+    TrainingParameters trainingParams)
 {
 
     std::ofstream file(filename);
@@ -446,7 +448,9 @@ void storeToHeaderFile(
         file << "// " << info.name << "\n";
         for (size_t i = 0; i < info.size; ++i, ++featureIdx) {
 
-            file << "static const typeInf dataSourcesLE_" << featureIdx;
+            file << "static const "
+            << trainingParams.instrType
+            << " dataSourcesLE_" << featureIdx;
 
             // Si featureIdx est entre 9 et 14 => tableau de taille 1
             if ((featureIdx >= 9 && featureIdx <= 14) || (featureIdx >= 3 && featureIdx <= 5)) {

@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.16)
 # - MultipleTraining: Create multiple trainings
 # - CodeGen: Reduce the size of the trained TPG graph by generating C code, making 
 # it free from the gegelati library. Removes unnecessary parts of the graph called hitchickers and unecessary instructions called introns.
-# - InferenceEnv: Execute a TPG from C code, after code generation, on the ArmLearnWrapper learning environment
+# - InferenceAccuracy: Execute a TPG from C code, after code generation, on the ArmLearnWrapper learning environment
 # - GrabGegelati: Control the robotic arm with gegelati.
 # - GrabStandalone: Control the robotic arm without gegelati.
 #
@@ -76,14 +76,14 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+        # ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceAccuracy.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainExportLEstates.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
         )
 
@@ -109,37 +109,36 @@ target_compile_definitions(MultipleTraining PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR
 list(REMOVE_ITEM
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainMultipleTraining.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h)
+        )
 list(APPEND
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceAccuracy.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         )
 
 
-# InferenceEnv, Execute a TPG from C code, after code generation on the ArmLearnWrapper learning environment
-# add_executable(InferenceEnv ${armgegelati_files})
-# target_link_libraries(InferenceEnv ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
-# target_compile_definitions(InferenceEnv PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+# InferenceAccuracy, Execute a TPG from C code, after code generation on the ArmLearnWrapper learning environment
+add_executable(InferenceAccuracy ${armgegelati_files})
+target_link_libraries(InferenceAccuracy ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(InferenceAccuracy PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 list(REMOVE_ITEM
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceEnv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper_InferenceEnv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceAccuracy.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h
 
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.c
+)
 
-        )
 list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp)
