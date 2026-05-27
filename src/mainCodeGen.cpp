@@ -5,7 +5,8 @@
 
 #include <gegelati.h>
 #include "instructions.h"
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
+#include "params/codegenParameters.h"
 #include "armLearnLogger.h"
 #include "armLearnWrapper.h"
 #include "armLearningAgent.h"
@@ -23,17 +24,16 @@ int main(int argc, char** argv ){
         std::filesystem::create_directories(codeGenPath);
     }
 
+    // Set the parameters of the armLearnWrapper from trainParams.json
     TrainingParameters trainingParams;
     trainingParams.loadParametersFromJson((path + "params/trainParams.json").c_str());
 
-    /*if(config < 11){
-        trainingParams.useInstrSinLn=true;
-    }*/
-
-    // Set the parameters for the learning process.
-    // Loads them from params.json
+    // Set the parameters for the learning process from params.json
     Learn::LearningParameters params;
     File::ParametersParser::loadParametersFromJson((path + "params/params.json").c_str(), params);
+
+    CodeGenParameters codeGenParams;
+    codeGenParams.loadParametersFromJson((path + "params/codegenParams.json").c_str());
 
     // Create the instruction set for programs
 	Instructions::Set set;
@@ -157,9 +157,8 @@ int main(int argc, char** argv ){
 
     std::cout << "Printing C code." << std::endl;
 	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::gotoMode);
-    bool isInstrumented = true; bool isDecorated = true;
     std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath, 
-                                                    trainingParams.instrType, isInstrumented, isDecorated);
+        trainingParams.instrType, codeGenParams.isInstrumented, codeGenParams.isDecorated);
     tpggen->generateTPGGraph();
 
     return 0;

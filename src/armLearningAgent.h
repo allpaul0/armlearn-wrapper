@@ -7,7 +7,7 @@
 #include <thread>
 
 #include <gegelati.h>
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 
 namespace Learn {
     /**

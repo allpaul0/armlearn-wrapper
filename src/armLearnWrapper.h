@@ -19,7 +19,7 @@
 #include <armlearn/widowxbuilder.h>
 #include <armlearn/basiccartesianconverter.h>
 #include <armlearn/devicelearner.h>
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 #include "codegen/externHeader.h"
 
 /**

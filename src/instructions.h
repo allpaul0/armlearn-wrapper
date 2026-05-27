@@ -9,7 +9,7 @@
 #define INSTRUCTIONS_H
 
 #include <gegelati.h>
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 
 /**
 * Fill the given instruction set.
