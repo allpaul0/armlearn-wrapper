@@ -8,7 +8,7 @@
 #include<unistd.h>
 
 #include "instructions.h"
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 #include "armLearnLogger.h"
 #include "armLearnWrapper.h"
 #include "armLearningAgent.h"
