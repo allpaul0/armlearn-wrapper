@@ -116,9 +116,9 @@
 	// "nbIterationsPerJob" : 1, // Default value
 	"nbIterationsPerJob" : 1,
 
-	// Number of evaluation of each root per generation.
+	// Each policy (root) evaluation consists of multiple environment rollouts (iterations).
+	// This parameter defines how many rollouts are used per root per generation.
 	// "nbIterationsPerPolicyEvaluation" : 5, // Default value
-
 	"nbIterationsPerPolicyEvaluation" : 100,
 
 	// Number of Constant available in each Program.
