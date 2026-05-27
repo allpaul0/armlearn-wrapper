@@ -12,6 +12,11 @@
 
 #define NB_ACTIONS_INF 1E4
 
+/**
+ * Latency benchmark for TPG inference, using the precalculated LE states from exportLEstates 
+ * to ensure equiprobable traversals of the TPG and fair measurements. 
+ */
+
 // const typeInf * restrict inX
 // Global pointers that generated code will use to access the input values for each inference
 // const and restrict qualifiers are used to allow for better optimization by the compiler, 
