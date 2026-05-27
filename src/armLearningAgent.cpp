@@ -126,18 +126,18 @@ void Learn::ArmLearningAgent::testingBestRoot(uint64_t generationNumber){
     result = this->evaluateJob(*tee, *job, generationNumber, mode, this->learningEnvironment);
 
     auto end = std::chrono::high_resolution_clock::now();
-
-    //Calculate the duration
+    
     std::chrono::duration<double> duration = end - start;
 
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
 
-    //duration = duration / 1e3; 
-    std::cout<<"Testing score : " <<  result->getResult();
-    std::cout << " -- Testing success rate " <<  std::dynamic_pointer_cast<ArmlearnEvaluationResult>(result)->getSuccess();
+    std::cout << "Testing score of best root using validation trajectories: " << result->getResult();
+    std::cout << " -- Test success rate "
+            << std::dynamic_pointer_cast<ArmlearnEvaluationResult>(result)->getSuccess();
 
-    std::cout<<" -- Test duration : " << duration.count() << " seconds ("
-             << microseconds / 1e3 << " microseconds over 1000 runs)"<<std::endl;
+    std::cout << " -- Test duration : " << duration.count() << " seconds ("
+            << microseconds << " microseconds over " << generationNumber << " generations)"
+            << std::endl;
 }
 
 std::shared_ptr<Learn::EvaluationResult> Learn::ArmLearningAgent::evaluateJob(
