@@ -56,7 +56,7 @@ Informations include:
 - Methods for evaluation
 README-LEARNING-STRATEGY.md
 
-## Learning Environment supports multiple types at Inference 
+## Learning Environment supports multiple types at Inference & the export of type tuned LE states  
 
 > ⚠️ **Warning:** (multiple types supported at Inference only not during Training or CodeGen)
 
@@ -77,6 +77,16 @@ CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
 make InferenceBenchmark
 cd ..
 ./build/InferenceBenchmark
+```
+
+### exportLEstates
+
+```
+mkdir build && cd build
+CXXFLAGS="-DUSE_FIXEDPT" CFLAGS="-DUSE_FIXEDPT" cmake ..
+make exportLEstates
+cd ..
+./build/exportLEstates
 ```
 
 ### Training
