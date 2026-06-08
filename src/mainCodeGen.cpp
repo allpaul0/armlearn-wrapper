@@ -11,29 +11,55 @@
 #include "armLearnWrapper.h"
 #include "armLearningAgent.h"
 
+// Play the game once to identify useful edges & vertices
+void validation(float *score, int *nbActions, 
+    const TPG::TPGVertex* root, ArmLearnWrapper& armLearnEnv, 
+    const Learn::LearningParameters& params, Environment& env,
+    const std::string& trace){
+    
+    std::ofstream ofs ("outLogs/" + trace + ".txt", std::ofstream::out);
+    TPG::TPGExecutionEngineInstrumented tee(env);
+    *nbActions = 0;
+    int nbActionsEp = 0;
+    int nbEpisodes = 0;
+    *score = 0;
+
+    while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
+        if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || *nbActions == 0){
+            *score += armLearnEnv.getScore();
+            armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
+            nbEpisodes++;
+            nbActionsEp = 0;
+        }
+    	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
+        armLearnEnv.doAction((double) actionID);
+        ofs << *nbActions << " " << actionID << std::endl;
+        (*nbActions)++;
+        nbActionsEp++;
+    }
+    *score /= params.nbIterationsPerPolicyEvaluation;
+    std::cout << "Total score: " << *score << " in "  << *nbActions << " actions." << std::endl;
+    ofs.close();
+}
 
 int main(int argc, char** argv ){
-    int config = 0;
-    int seed = 0;
-
-    std::string path = "";
 
     // Check if outLogs/codegen exists, if not, create it
-    std::string codeGenPath = (path + "outLogs/codegen/").c_str();
+    std::string codeGenPath = "outLogs/codegen/";
     if(!std::filesystem::exists(codeGenPath)){
         std::filesystem::create_directories(codeGenPath);
     }
 
     // Set the parameters of the armLearnWrapper from trainParams.json
     TrainingParameters trainingParams;
-    trainingParams.loadParametersFromJson((path + "params/trainParams.json").c_str());
+    trainingParams.loadParametersFromJson("params/trainParams.json");
 
     // Set the parameters for the learning process from params.json
     Learn::LearningParameters params;
-    File::ParametersParser::loadParametersFromJson((path + "params/params.json").c_str(), params);
+    File::ParametersParser::loadParametersFromJson("params/params.json", params);
 
     CodeGenParameters codeGenParams;
-    codeGenParams.loadParametersFromJson((path + "params/codegenParams.json").c_str());
+    codeGenParams.loadParametersFromJson("params/codegenParams.json");
 
     // Create the instruction set for programs
 	Instructions::Set set;
@@ -42,7 +68,7 @@ int main(int argc, char** argv ){
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
-    auto dotfile = path + trainingParams.tpgDotPathTraining;
+    auto dotfile = trainingParams.tpgDotPathTraining;
 
     // Instantiate and init the learning agent
     Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
@@ -50,75 +76,31 @@ int main(int argc, char** argv ){
 
     // Load graph
     std::cout << "Loading dot file from " << dotfile << std::endl;
-
     auto &tpg = *la.getTPGGraph();
     Environment env = tpg.getEnvironment();
     TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
     File::TPGGraphDotImporter dot((dotfile).c_str(), env, tpgGraph);
     dot.importGraph();
     const TPG::TPGVertex* root = tpgGraph.getRootVertices().front();
-
     armLearnEnv.loadValidationTrajectories();
 
-    // Play the game once to identify useful edges & vertices
-    std::ofstream ofs ((path + "outLogs/tpg_orig.txt").c_str(), std::ofstream::out);
-    TPG::TPGExecutionEngineInstrumented tee(env);
-    int nbActions = 0;
-    int nbActionsEp = 0;
-    int nbEpisodes = 0;
-    double scoreOrig = 0;
+    /**** Play the game once to identify useful edges & vertices ****/
+    std::cout << "Play with TPG from the GEGELATI lib" << std::endl;
+    float scoreGegelati; int nbActionsGegelati;
+    validation(&scoreGegelati, &nbActionsGegelati, root, armLearnEnv, params, env, "tpg_gegelati_trace_validation");
 
-    while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
-        if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || nbActions == 0){
-            scoreOrig += armLearnEnv.getScore();
-            armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
-            nbEpisodes++;
-            nbActionsEp = 0;
-        }
-    	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
-        armLearnEnv.doAction((double) actionID);
-        ofs << nbActions << " " << actionID << std::endl;
-        nbActions++;
-        nbActionsEp++;
-    }
-    scoreOrig /= params.nbIterationsPerPolicyEvaluation;
-    auto nbActionsOrig = nbActions;
-    std::cout << "Total score: " << scoreOrig << " in "  << nbActionsOrig << " actions." << std::endl;
-    ofs.close();
-
-    // Prune the unused vertices & teams
+    /**** Prune the unused vertices & teams ****/
     ((const TPG::TPGFactoryInstrumented&)tpgGraph.getFactory()).clearUnusedTPGGraphElements(tpgGraph);
     tpgGraph.clearProgramIntrons();
 
     root = tpgGraph.getRootVertices().front();
 
-    // Play the game again to check the result remains the same.
-    std::ofstream ofs2 ((codeGenPath + "tpg_pruned.txt").c_str(), std::ofstream::out);
-    nbActions = 0;
-    nbEpisodes = 0;
-    double scorePruned = 0;
-    armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
-    std::cout << "Play with pruned TPG code" << std::endl;
-    
-    while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
-        if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || nbActions == 0){
-            scorePruned += armLearnEnv.getScore();
-            armLearnEnv.reset(nbActions, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
-            
-            nbEpisodes++;
-            nbActionsEp = 0;
-        }
-    	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
-        armLearnEnv.doAction((double) actionID);
-        ofs2 << nbActions << " " << actionID << std::endl;
-        nbActions++;
-        nbActionsEp++;
+    /**** Play the game again to check the result remains the same ****/
+    std::cout << "Play with code generated TPG" << std::endl;
+    float scoreCodeGen; int nbActionsCodeGen;
+    validation(&scoreCodeGen, &nbActionsCodeGen, root, armLearnEnv, params, env, "tpg_codegen_trace_validation");
 
-    }
-    std::cout << "Total score: " << scorePruned / params.nbIterationsPerPolicyEvaluation << " in "  << nbActions << " actions." << std::endl;
-    ofs.close();
-
-    if(scorePruned / params.nbIterationsPerPolicyEvaluation != scoreOrig || nbActions != nbActionsOrig){
+    if(scoreCodeGen / params.nbIterationsPerPolicyEvaluation != scoreGegelati || nbActionsCodeGen != nbActionsGegelati){
         std::cout << "Determinism was lost during graph pruning." << std::endl;
         exit(1);
     }
@@ -130,21 +112,19 @@ int main(int argc, char** argv ){
     ps.analyzePolicy(tpgGraph.getRootVertices().front());
 
     // Print in file
-    char bestPolicyStatsPath[150];
     std::ofstream bestStats;
-    sprintf(bestPolicyStatsPath, (codeGenPath + "best_root_pruned_stats.md").c_str());
+    std::string bestPolicyStatsPath = codeGenPath + "best_root_pruned_stats.md";
     bestStats.open(bestPolicyStatsPath);
     bestStats << ps;
     bestStats.close();
 
     // Export pruned dot file
     std::cout << "Printing pruned dot file." << std::endl;
-    char bestDot[150];
-    sprintf(bestDot, (codeGenPath + "best_root_pruned.dot").c_str());
-    File::TPGGraphDotExporter dotExporter(bestDot, tpgGraph);
+    std::string bestDot = codeGenPath + "best_root_pruned.dot";
+    File::TPGGraphDotExporter dotExporter(bestDot.c_str(), tpgGraph);
     dotExporter.print();
 
-    File::TPGGraphDotImporter dotImporter((codeGenPath + "best_root_pruned.dot").c_str(), env, tpg);
+    File::TPGGraphDotImporter dotImporter(bestDot.c_str(), env, tpg);
     // 1. Compare the TPGGraph objects themselves (pointer equality)
     std::cout << "Comparing imported dot file to pruned TPGGraph." << std::endl;
     if (la.getTPGGraph().get() == &tpg)
