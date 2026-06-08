@@ -33,18 +33,19 @@
 * (see method reset)
 * At each frame, the TPG is asked to take a decision based on the input
 * (currently pos of motors and distances between arm and target on x, y and z).
-* It decides to move a motor in one direction from a fix
+* It decides to move a motor in one direction from a fixed
 * angle, or to do nothing. Then, its inputs are updated and it goes on.
 * The simulation is stopped after something like 1000 frames, and we
 * take the negative distance arm-target as score.
 */
 
-// this structure is used to store information about each data source
-// in the Learning Environment
-// it is used to write the header file with the data sources information
-// in the storeToHeaderFile function
-// so that the data can be correctly interpreted when reading the file
-// in another program
+/* this structure is used to store information about each data source
+* in the Learning Environment
+* it is used to write the header file with the data sources information
+* in the storeToHeaderFile function
+* so that the data can be correctly interpreted when reading the file
+* in another program
+*/
 struct DataSourceInfo {
     std::string name;
     size_t size;
