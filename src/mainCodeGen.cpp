@@ -11,7 +11,7 @@
 #include "armLearnWrapper.h"
 #include "armLearningAgent.h"
 
-// Play the game once to identify useful edges & vertices
+// Perform validation to identify used edges & vertices
 void validation(float *score, int *nbActions, 
     const TPG::TPGVertex* root, ArmLearnWrapper& armLearnEnv, 
     const Learn::LearningParameters& params, Environment& env,
@@ -46,9 +46,7 @@ int main(int argc, char** argv ){
 
     // Check if outLogs/codegen exists, if not, create it
     std::string codeGenPath = "outLogs/codegen/";
-    if(!std::filesystem::exists(codeGenPath)){
-        std::filesystem::create_directories(codeGenPath);
-    }
+    if(!std::filesystem::exists(codeGenPath)) std::filesystem::create_directories(codeGenPath);
 
     // Set the parameters of the armLearnWrapper from trainParams.json
     TrainingParameters trainingParams;
@@ -68,18 +66,16 @@ int main(int argc, char** argv ){
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
-    auto dotfile = trainingParams.tpgDotPathTraining;
-
     // Instantiate and init the learning agent
     Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
     la.init(trainingParams.seed);
 
     // Load graph
-    std::cout << "Loading dot file from " << dotfile << std::endl;
+    std::cout << "Loading dot file from " << trainingParams.tpgDotPathTraining << std::endl;
     auto &tpg = *la.getTPGGraph();
     Environment env = tpg.getEnvironment();
     TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
-    File::TPGGraphDotImporter dot((dotfile).c_str(), env, tpgGraph);
+    File::TPGGraphDotImporter dot((trainingParams.tpgDotPathTraining).c_str(), env, tpgGraph);
     dot.importGraph();
     const TPG::TPGVertex* root = tpgGraph.getRootVertices().front();
     armLearnEnv.loadValidationTrajectories();
@@ -87,7 +83,7 @@ int main(int argc, char** argv ){
     /**** Play the game once to identify useful edges & vertices ****/
     std::cout << "Play with TPG from the GEGELATI lib" << std::endl;
     float scoreGegelati; int nbActionsGegelati;
-    validation(&scoreGegelati, &nbActionsGegelati, root, armLearnEnv, params, env, "tpg_gegelati_trace_validation");
+    validation(&scoreGegelati, &nbActionsGegelati, root, armLearnEnv, params, env, "tpg_gegelati_validation");
 
     /**** Prune the unused vertices & teams ****/
     ((const TPG::TPGFactoryInstrumented&)tpgGraph.getFactory()).clearUnusedTPGGraphElements(tpgGraph);
@@ -98,9 +94,9 @@ int main(int argc, char** argv ){
     /**** Play the game again to check the result remains the same ****/
     std::cout << "Play with code generated TPG" << std::endl;
     float scoreCodeGen; int nbActionsCodeGen;
-    validation(&scoreCodeGen, &nbActionsCodeGen, root, armLearnEnv, params, env, "tpg_codegen_trace_validation");
+    validation(&scoreCodeGen, &nbActionsCodeGen, root, armLearnEnv, params, env, "tpg_codegen_validation");
 
-    if(scoreCodeGen / params.nbIterationsPerPolicyEvaluation != scoreGegelati || nbActionsCodeGen != nbActionsGegelati){
+    if(scoreCodeGen != scoreGegelati || nbActionsCodeGen != nbActionsGegelati){
         std::cout << "Determinism was lost during graph pruning." << std::endl;
         exit(1);
     }
@@ -110,8 +106,6 @@ int main(int argc, char** argv ){
     TPG::PolicyStats ps;
     ps.setEnvironment(env);
     ps.analyzePolicy(tpgGraph.getRootVertices().front());
-
-    // Print in file
     std::ofstream bestStats;
     std::string bestPolicyStatsPath = codeGenPath + "best_root_pruned_stats.md";
     bestStats.open(bestPolicyStatsPath);
@@ -125,7 +119,7 @@ int main(int argc, char** argv ){
     dotExporter.print();
 
     File::TPGGraphDotImporter dotImporter(bestDot.c_str(), env, tpg);
-    // 1. Compare the TPGGraph objects themselves (pointer equality)
+    // Compare the TPGGraph objects themselves (pointer equality)
     std::cout << "Comparing imported dot file to pruned TPGGraph." << std::endl;
     if (la.getTPGGraph().get() == &tpg)
         std::cout << "Dot import/export works correctly." << std::endl;
