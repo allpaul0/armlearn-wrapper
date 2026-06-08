@@ -19,10 +19,14 @@ void validation(float *score, int *nbActions,
     
     std::ofstream ofs ("outLogs/" + trace + ".txt", std::ofstream::out);
     TPG::TPGExecutionEngineInstrumented tee(env);
+    
     *nbActions = 0;
     int nbActionsEp = 0;
     int nbEpisodes = 0;
     *score = 0;
+
+    armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
+
 
     while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
         if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || *nbActions == 0){
@@ -33,6 +37,7 @@ void validation(float *score, int *nbActions,
         }
     	uint64_t actionID = ((TPG::TPGAction*)(tee.executeFromRoot(*root).first.back()))->getActionID();
         armLearnEnv.doAction((double) actionID);
+        ofs << *score << std::endl;
         ofs << *nbActions << " " << actionID << std::endl;
         (*nbActions)++;
         nbActionsEp++;
