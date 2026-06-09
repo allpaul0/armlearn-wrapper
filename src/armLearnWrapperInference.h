@@ -55,13 +55,13 @@ public:
     /**
      * Copy constructor — mirrors the base copy constructor and copies the typeInf arrays.
      */
-    ArmLearnWrapperInference(const ArmLearnWrapperInference& other)
-        : ArmLearnWrapper(other),
-          motorPos_typeInf(other.motorPos_typeInf),
-          cartesianHand_typeInf(other.cartesianHand_typeInf),
-          cartesianTarget_typeInf(other.cartesianTarget_typeInf),
-          cartesianDiff_typeInf(other.cartesianDiff_typeInf),
-          dataMotorSpeed_typeInf(other.dataMotorSpeed_typeInf)
+    ArmLearnWrapperInference(const ArmLearnWrapperInference& alwi)
+        : ArmLearnWrapper(alwi),
+          motorPos_typeInf(alwi.motorPos_typeInf),
+          cartesianHand_typeInf(alwi.cartesianHand_typeInf),
+          cartesianTarget_typeInf(alwi.cartesianTarget_typeInf),
+          cartesianDiff_typeInf(alwi.cartesianDiff_typeInf),
+          dataMotorSpeed_typeInf(alwi.dataMotorSpeed_typeInf)
     {}
 
     /**
