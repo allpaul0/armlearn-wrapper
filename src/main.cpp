@@ -9,7 +9,7 @@
 
 #include <gegelati.h>
 #include "instructions.h"
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 #include "armLearnLogger.h"
 
 #include "armLearnWrapper.h"
@@ -57,7 +57,6 @@ int main() {
 	Instructions::Set set;
 	fillInstructionSet(set, trainingParams);
 
-
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
@@ -96,20 +95,24 @@ int main() {
     }
 
     // If a validation target is done
-    bool doUpdateLimits = (trainingParams.progressiveModeTargets || trainingParams.progressiveModeStartingPos);
+    bool doUpdateLimits = (trainingParams.progressiveModeTargets 
+        || trainingParams.progressiveModeStartingPos);
     bool doValidationTarget = (trainingParams.doTrainingValidation && doUpdateLimits);
 
     //Creation of the Output stream on cout and on the file
     std::string nameLogs = (!!trainingParams.testing) ? "logsGegelati" : "garbage";
     std::ofstream fichier(("outLogs/" + nameLogs + ".ods"), std::ios::out);
-    auto logFile = *new Log::ArmLearnLogger(la,doValidationTarget,doUpdateLimits,trainingParams.controlTrajectoriesDeletion,fichier);
-    auto logCout = *new Log::ArmLearnLogger(la,doValidationTarget,doUpdateLimits,trainingParams.controlTrajectoriesDeletion);
+    auto logFile = *new Log::ArmLearnLogger(la, doValidationTarget, doUpdateLimits, 
+        trainingParams.controlTrajectoriesDeletion, fichier);
+    auto logCout = *new Log::ArmLearnLogger(la, doValidationTarget, doUpdateLimits, 
+        trainingParams.controlTrajectoriesDeletion);
 
     // Use previous Graphs
     if(trainingParams.startPreviousTPG){
         auto &tpg = *la.getTPGGraph();
         Environment env(set, params, armLearnEnv.getDataSources());
-        File::TPGGraphDotImporter dotImporter(("outLogs/dotfiles/" + trainingParams.namePreviousTPG).c_str(), env, tpg);
+        File::TPGGraphDotImporter dotImporter(("outLogs/dotfiles/" + 
+            trainingParams.namePreviousTPG).c_str(), env, tpg);
     }
 
     // Save the validation trajectories
@@ -144,12 +147,9 @@ int main() {
 
         // Train for params.nbGenerations generations
         for (uint64_t i = 0; i < params.nbGenerations && !exitProgram && !timeLimitReached; i++) {
-            armLearnEnv.setgeneration(i);
-
 
             // Update/Generate the training trajectories
             armLearnEnv.updateTrainingTrajectories(trainingParams.nbIterationTraining);
-
 
             //print the previous graphs
             char buff[64];
@@ -164,15 +164,12 @@ int main() {
                 // Set true if the time is above the limit
                 timeLimitReached = (((std::chrono::duration<double>)(std::chrono::system_clock::now() - *checkpoint)).count() > trainingParams.timeMaxTraining);
             }
-
         }
-
 
         // Keep best policy
         la.keepBestPolicy();
         dotExporter.setNewFilePath("outLogs/best_root.dot");
         dotExporter.print();
-
         
         // Export best policy statistics.
         TPG::PolicyStats ps;
@@ -186,8 +183,6 @@ int main() {
         // close log file also
         stats.close();
     }
-
-
 
     // cleanup
     for (unsigned int i = 0; i < set.getNbInstructions(); i++) {
