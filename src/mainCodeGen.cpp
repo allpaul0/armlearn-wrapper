@@ -21,9 +21,9 @@ void validation(float *score, int *nbActions,
     TPG::TPGExecutionEngineInstrumented tee(env);
     armLearnEnv.reset(0, Learn::LearningMode::VALIDATION);
     
-    *nbActions = 0;
     int nbActionsEp = 0;
     int nbEpisodes = 0;
+    *nbActions = 0;
     *score = 0;
 
     while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
@@ -89,9 +89,8 @@ int main(int argc, char** argv ){
     validation(&scoreGegelati, &nbActionsGegelati, root, armLearnEnv, params, env, "tpg_gegelati_validation");
 
     /**** Prune the unused vertices & teams ****/
-    ((const TPG::TPGFactoryInstrumented&)tpgGraph.getFactory()).clearUnusedTPGGraphElements(tpgGraph);
+    ((const TPG::TPGFactoryInstrumented&)tpgGraph.getFactory()).clearUnusedTPGGraphElementsV2(tpgGraph);
     tpgGraph.clearProgramIntrons();
-
     root = tpgGraph.getRootVertices().front();
     armLearnEnv.resetIterations();
 
@@ -122,17 +121,17 @@ int main(int argc, char** argv ){
     File::TPGGraphDotExporter dotExporter(bestDot.c_str(), tpgGraph);
     dotExporter.print();
 
+    // Compare the exported and re-imported TPGGraph to the current via pointer equality 
     File::TPGGraphDotImporter dotImporter(bestDot.c_str(), env, tpg);
-    // Compare the TPGGraph objects themselves (pointer equality)
     std::cout << "Comparing imported dot file to pruned TPGGraph." << std::endl;
-    if (la.getTPGGraph().get() == &tpg)
-        std::cout << "Dot import/export works correctly." << std::endl;
-    else
-        std::cout << "Dot import/export does not work correctly." << std::endl;
+    (la.getTPGGraph().get() == &tpg) 
+        ? std::cout << "Dot import/export works correctly." << std::endl
+        : std::cout << "Dot import/export does not work correctly." << std::endl;
 
     trainingParams.testing = true;
     la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
 
+    // Perform the code generation
     std::cout << "Printing C code." << std::endl;
 	CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::gotoMode);
     std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen = factory.create("TPG", tpgGraph, codeGenPath, 
