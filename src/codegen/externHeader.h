@@ -8,8 +8,8 @@ extern "C" {
 #include <float.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "../fixedptc/fixedptc.h"
-#include "../approximateComputingTools.h"
+#include "../approx_num/fixedptc.h"
+#include "../approx_num/approximateComputingTools.h"
 
 #ifdef USE_INT
   #warning "Using int as typeInf"

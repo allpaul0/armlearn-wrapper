@@ -3,7 +3,7 @@
 
 #include "codegen/externHeader.h"
 #include "codegen/TPG.h"
-#include "armLearnWrapperInference.h"
+#include "armlearn/armLearnWrapperInference.h"
 #include "instructions.h"
 #include "params/trainingParameters.h"
 

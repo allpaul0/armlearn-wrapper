@@ -19,7 +19,7 @@
 #include <armlearn/widowxbuilder.h>
 #include <armlearn/basiccartesianconverter.h>
 #include <armlearn/devicelearner.h>
-#include "params/trainingParameters.h"
+#include "../params/trainingParameters.h"
 
 /**
 * LearningEnvironment to use armLean in order to learn how to move a robotic arm.

@@ -2,7 +2,7 @@
 #include <math.h>
 
 #include "instructions.h"
-#include "approximateComputingTools.h"
+#include "approx_num/approximateComputingTools.h"
 
 void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
     

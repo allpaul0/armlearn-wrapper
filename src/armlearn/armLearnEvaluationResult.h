@@ -19,7 +19,7 @@ namespace Learn {
      * in a single simulation and, as a consequence, there are several results
      * at the end.
      */
-    class ArmlearnEvaluationResult : public EvaluationResult
+    class ArmLearnEvaluationResult : public EvaluationResult
     {
       protected:
         /// The scores of the roots, in the order in which they participated.
@@ -38,7 +38,7 @@ namespace Learn {
          * get these scores. Default is 1 as we can guess user only did 1
          * iteration.
          */
-        ArmlearnEvaluationResult(const double score, const double success, const double distance, std::vector<std::pair<int, double>> trajScores, const size_t& nbEval)
+        ArmLearnEvaluationResult(const double score, const double success, const double distance, std::vector<std::pair<int, double>> trajScores, const size_t& nbEval)
             : EvaluationResult(score, nbEval)
         {
           this->success = success;

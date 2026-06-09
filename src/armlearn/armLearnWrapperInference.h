@@ -2,7 +2,7 @@
 #define ARM_LEARN_WRAPPER_INFERENCE_H
 
 #include "armLearnWrapper.h"
-#include "codegen/externHeader.h"
+#include "../codegen/externHeader.h"
 
 /**
  * Inference-mode variant of ArmLearnWrapper.

@@ -66,7 +66,8 @@ file(GLOB_RECURSE
         ./src/*.cpp
         ./lib/JsonCpp/*.cpp
         ./src/*.h
-        )
+        ./src/armlearn/*.cpp
+        ./src/armlearn/*.h)
 list(REMOVE_ITEM
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/resultTester.cpp
@@ -82,8 +83,8 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/externHeader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainExportLEstates.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
         )
 
@@ -113,8 +114,8 @@ list(REMOVE_ITEM
 list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceAccuracy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.c
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/codegen/TPG_program.h
@@ -131,12 +132,12 @@ target_compile_definitions(InferenceAccuracy PRIVATE ROOT_DIR="${CMAKE_SOURCE_DI
 list(REMOVE_ITEM
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceAccuracy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapperInference.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.h
 
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearningAgent.cpp
 )
 
 list(APPEND
@@ -161,9 +162,9 @@ list(REMOVE_ITEM
 list(APPEND
         armgegelati_files
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearnWrapper.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armLearningAgent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearningAgent.cpp
 )
 
 

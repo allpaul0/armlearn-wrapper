@@ -3,7 +3,7 @@
 #include <numeric>
 
 #include "armLearnLogger.h"
-#include "armlearnEvaluationResult.h"
+#include "armLearnEvaluationResult.h"
 
 void Log::ArmLearnLogger::logResults(
     std::multimap<std::shared_ptr<Learn::EvaluationResult>,
@@ -11,9 +11,9 @@ void Log::ArmLearnLogger::logResults(
 {
     auto iter = results.begin();
     std::advance(iter, results.size() - 1);
-    double maxReward = std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getResult();
+    double maxReward = std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getResult();
     
-    double maxDistance = std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getDistance();
+    double maxDistance = std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getDistance();
 
     
     double avgReward = std::accumulate(
@@ -21,7 +21,7 @@ void Log::ArmLearnLogger::logResults(
         [](double acc,
            std::pair<std::shared_ptr<Learn::EvaluationResult>,
                      const TPG::TPGVertex*>
-               pair) -> double { return acc + std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(pair.first)->getResult(); });
+               pair) -> double { return acc + std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(pair.first)->getResult(); });
     avgReward /= (double)results.size();
 
 
@@ -126,7 +126,7 @@ void Log::ArmLearnLogger::logAfterValidate(
 
     auto iter = results.begin();
     std::advance(iter, results.size() - 1);
-    double maxSuccess = std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getSuccess();
+    double maxSuccess = std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getSuccess();
     *this << std::setw(colWidth) << maxSuccess; 
 
     chronoFromNow();

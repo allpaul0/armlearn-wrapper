@@ -2,7 +2,7 @@
 #include "armLearningAgent.h"
 #include "armLearnLogger.h"
 #include "armLearnWrapper.h"
-#include "armlearnEvaluationResult.h"
+#include "armLearnEvaluationResult.h"
 
 void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
 
@@ -26,14 +26,14 @@ void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
     }
     auto iter = results.begin();
     std::advance(iter, results.size() - 1);
-    double bestResult = std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getResult();
+    double bestResult = std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getResult();
 
     // Update five last best score
     fiveLastBest.push_back(bestResult);
     if (generationNumber >= 5){
         fiveLastBest.erase(fiveLastBest.begin());
     }
-    for(auto pair: std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getTrajScores()){
+    for(auto pair: std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getTrajScores()){
         ((ArmLearnWrapper&)learningEnvironment).addToScoreTrajectories(pair.first, pair.second);
     }
     // Remove worst performing roots
@@ -75,7 +75,7 @@ void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
         // Update limits
         auto iter = trainingValidationResults.begin();
         std::advance(iter, trainingValidationResults.size() - 1);
-        bestResult = std::dynamic_pointer_cast<Learn::ArmlearnEvaluationResult>(iter->first)->getDistance();
+        bestResult = std::dynamic_pointer_cast<Learn::ArmLearnEvaluationResult>(iter->first)->getDistance();
 
     }
 
@@ -131,7 +131,7 @@ void Learn::ArmLearningAgent::testingBestRoot(uint64_t generationNumber){
 
     std::cout << "Testing score of best root using validation trajectories: " << result->getResult();
     std::cout << " -- Test success rate "
-            << std::dynamic_pointer_cast<ArmlearnEvaluationResult>(result)->getSuccess();
+            << std::dynamic_pointer_cast<ArmLearnEvaluationResult>(result)->getSuccess();
 
     std::cout << " -- Test duration : " << duration.count() << " seconds ("
             << microseconds << " microseconds over " << generationNumber << " generations)"
@@ -237,7 +237,7 @@ std::shared_ptr<Learn::EvaluationResult> Learn::ArmLearningAgent::evaluateJob(
 
     // Create the EvaluationResult
     auto evaluationResult =
-        std::shared_ptr<Learn::ArmlearnEvaluationResult>(new Learn::ArmlearnEvaluationResult(
+        std::shared_ptr<Learn::ArmLearnEvaluationResult>(new Learn::ArmLearnEvaluationResult(
             meanScore,
             success / (double)nbIteration,
             distance / (double)nbIteration,

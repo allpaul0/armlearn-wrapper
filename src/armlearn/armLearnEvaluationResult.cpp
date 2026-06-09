@@ -1,21 +1,21 @@
 
 
-#include "armlearnEvaluationResult.h"
+#include "armLearnEvaluationResult.h"
 #include <iostream>
 
-double Learn::ArmlearnEvaluationResult::getSuccess() const{
+double Learn::ArmLearnEvaluationResult::getSuccess() const{
     return this->success;
 }
 
-double Learn::ArmlearnEvaluationResult::getDistance() const{
+double Learn::ArmLearnEvaluationResult::getDistance() const{
     return this->distance;
 }
 
-std::vector<std::pair<int, double>> Learn::ArmlearnEvaluationResult::getTrajScores(){
+std::vector<std::pair<int, double>> Learn::ArmLearnEvaluationResult::getTrajScores(){
     return this->trajScores;
 }
 
-Learn::EvaluationResult& Learn::ArmlearnEvaluationResult::operator+=(
+Learn::EvaluationResult& Learn::ArmLearnEvaluationResult::operator+=(
     const EvaluationResult& other)
 {
     // Type Check (Must be done in all override)
@@ -25,10 +25,10 @@ Learn::EvaluationResult& Learn::ArmlearnEvaluationResult::operator+=(
         throw std::runtime_error("Type mismatch between EvaluationResults.");
     }
 
-    auto otherConverted = (const Learn::ArmlearnEvaluationResult&)other;
+    auto otherConverted = (const Learn::ArmLearnEvaluationResult&)other;
 
-    // If the added type is Learn::ArmlearnEvaluationResult
-    if (thisType == typeid(Learn::ArmlearnEvaluationResult)) {
+    // If the added type is Learn::ArmLearnEvaluationResult
+    if (thisType == typeid(Learn::ArmLearnEvaluationResult)) {
 
         // Weighted addition of results
         this->result = this->result * (double)this->nbEvaluation +

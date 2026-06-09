@@ -7,9 +7,9 @@
 #include "instructions.h"
 #include "params/trainingParameters.h"
 #include "params/codegenParameters.h"
-#include "armLearnLogger.h"
-#include "armLearnWrapper.h"
-#include "armLearningAgent.h"
+#include "armlearn/armLearnLogger.h"
+#include "armlearn/armLearnWrapper.h"
+#include "armlearn/armLearningAgent.h"
 
 // Perform validation to identify used edges & vertices
 void validation(float *score, int *nbActions, 
