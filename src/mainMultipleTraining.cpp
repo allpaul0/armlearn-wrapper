@@ -10,7 +10,7 @@
 
 #include <gegelati.h>
 #include "instructions.h"
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 #include "armLearnLogger.h"
 
 #include "armLearnWrapper.h"
@@ -101,8 +101,6 @@ int main(){
 
         // Train for params.nbGenerations generations
         for (uint64_t i = 0; i < globalParams.nbGenerations && !timeLimitReached; i++) {
-            armLearnEnv.setgeneration(i);
-
 
             // Update/Generate the training trajectories
             armLearnEnv.updateTrainingTrajectories(trainingParams.nbIterationTraining);
@@ -120,7 +118,6 @@ int main(){
                 // Set true if the time is above the limit
                 timeLimitReached = (((std::chrono::duration<double>)(std::chrono::system_clock::now() - *checkpoint)).count() > trainingParams.timeMaxTraining);
             }
-
         }
 
 
