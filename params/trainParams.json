@@ -28,12 +28,13 @@
     "sizeAction": 10,
     "testing": false,
     "tpgDotPathTraining": "outLogs/best_root.dot",
+    "tpgDotPathInference": "outLogs/codegen/best_root_pruned.dot",
     "instrType": "fixedpt",
     "useInstrTrig": false,
     "useInstrLogExp": false,
     "useInstrComparison": true,
-    "useInstrExpensiveArithmetic": true,
-    "useInstrZmmul": false,
+    "useInstrExpensiveArithmetic": false,
+    "useInstrZmmul": true,
     "useInstrLog2Exp2": true,
     "actionSpeed": false,
     "realSimulation": true,
@@ -42,5 +43,5 @@
     "nbIterationRootCanceled": 100,
     "canDo360": false,
     "killIfCollision": true,
-    "instrSetName": "l2e2_compExpAr"
+    "instrSetName": "l2e2_compZmmul"
 }

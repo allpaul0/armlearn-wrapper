@@ -1,0 +1,12 @@
+{
+    // Instrumentation at Team level (start, compute all progs, end) 
+    // used for Basic Block analysis of TPG latency
+    "isInstrumented" : true,
+    
+    // Decoration means adding labels before Team sections to ease 
+    // parsing of assembly code 
+    "isDecorated" : true
+
+    /// This list could be extended to configure codegen at runtime
+    /// such as in nextflow processes 
+}

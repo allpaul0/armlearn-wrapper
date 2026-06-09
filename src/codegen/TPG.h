@@ -1,6 +1,6 @@
 /**
  * File generated with GEGELATI v2.0.0
- * On the 2026-05-17 12:03:36
+ * On the 2026-05-26 14:51:25
  * With the CodeGen::TPGGenerationEngine.
  */
 
@@ -24,13 +24,13 @@ extern "C" {
 
 #include "externHeader.h"
 
-# define NB_TEAMS 14
+# define NB_TEAMS 16
 
-void inferenceTPG(fixedpt* actions, 
-					const fixedpt * __restrict__ in1, 
-					const fixedpt * __restrict__ in2, 
-					const fixedpt * __restrict__ in3, 
-					const fixedpt * __restrict__ in4);
+void inferenceTPG(float* actions, 
+					const float * __restrict__ in1, 
+					const float * __restrict__ in2, 
+					const float * __restrict__ in3, 
+					const float * __restrict__ in4);
 
 #ifdef __cplusplus
 }
