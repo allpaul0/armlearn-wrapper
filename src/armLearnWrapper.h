@@ -20,7 +20,6 @@
 #include <armlearn/basiccartesianconverter.h>
 #include <armlearn/devicelearner.h>
 #include "params/trainingParameters.h"
-#include "codegen/externHeader.h"
 
 /**
 * LearningEnvironment to use armLean in order to learn how to move a robotic arm.
@@ -133,9 +132,6 @@ protected:
 
     /// Vector with Starting positions in keys and Targets positions in values used for the validation
     std::vector<std::pair<std::vector<uint16_t>*, armlearn::Input<double>*>> validationTrajectories;
-        
-    /// Current generation
-    int generation = 0;
 
     /// Target currently used to move the arm.
     armlearn::Input<double> *currentTarget;
@@ -151,7 +147,6 @@ protected:
 
     /// Checkpoint to get the duration of an episode (for testing logs)
     std::shared_ptr<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> checkpoint;
-    
 
     /// Vector that contain the indices of the trajectories and their best score. Used if trajectory deletion is activated
     std::vector<std::pair<int, double>> scoreTrajectories;
@@ -187,6 +182,9 @@ protected:
 
     double timeEnv = 0;
     std::shared_ptr<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> checkpointEnv;
+
+    // number of iteration done, this is an id for the trajecotries data set used for training, validation and testing
+    int iterationNb;
 
 public:
 
@@ -231,6 +229,8 @@ public:
             this->currentRangeTarget = params.rangeTarget;
         }
 
+        this->iterationNb = 0; 
+
         rng.setSeed(params.seed);
 
         loadTargetCSV();
@@ -251,7 +251,10 @@ public:
             this->currentRangeTarget = other.currentRangeTarget;
         } else {
             this->currentRangeTarget = params.rangeTarget;
-        }               
+        }            
+        
+        this->iterationNb = 0; 
+
     }
 
     /// @brief Destructor
@@ -277,7 +280,7 @@ public:
     void saveMotorPos();
 
     /// @brief Inherited via LearningEnvironment
-    void reset(size_t seed = 0, Learn::LearningMode mode = Learn::LearningMode::TRAINING, uint16_t iterationNumber = 0, uint64_t generationNumber = 0) override;
+    void reset(size_t seed = 0, Learn::LearningMode mode = Learn::LearningMode::TRAINING) override;
 
     /**
      * @brief Inherited via LearningEnvironment, create the state vector
@@ -414,10 +417,12 @@ public:
      */ 
     std::vector<uint16_t> getMotorsPos();
 
-    /**
-     * @brief Set generation
-     */ 
-    void setgeneration(int newGeneration);
+    /*
+    * @brief Reset the number of iterations to 0, 
+    * this is used to reset the id of the trajectories data set 
+    * used for training, validation and testing
+    */
+    void resetIterations();
 
     /**
      * @brief Get the initStartingPos

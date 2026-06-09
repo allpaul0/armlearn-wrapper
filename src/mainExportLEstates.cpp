@@ -14,8 +14,8 @@
 #include "armLearningAgent.h"
 #include "codegen/externHeader.h"
 
-#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 //2E2 // number of seeds used to find graph traversals
-#define MAX_NB_SEEDS_TO_SEARCH 2E2 //2E2 // to avoid infinite loop in complex LE and TPG
+#define DEFAULT_NB_SEEDS_TO_SEARCH 2E3 //2E2 // number of seeds used to find graph traversals
+#define MAX_NB_SEEDS_TO_SEARCH 2E5 //2E2 // to avoid infinite loop in complex LE and TPG
 #define NB_VALUES_PER_CLASS 10 //25 // number of occurences of each graph traversal we want to have
 // #define VERBOSE
 
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
             // of the LearningEnvironment
         
             // set the inital arm Learn Wrapper conditions using the seed
-            armLE.reset(j, Learn::LearningMode::TESTING, j, 0);
+            armLE.reset(j, Learn::LearningMode::TESTING);
 
             // get the data sources from the LE after reset to store them in the inferenceTraceInfos   
             std::vector<std::reference_wrapper<const Data::DataHandler>> dataHandlers = armLE.getDataSources();
@@ -277,6 +277,9 @@ int main(int argc, char *argv[])
         // time in this loop to try to get a more balanced map.
         continue_search = !balanced && (nbSeedsTried < MAX_NB_SEEDS_TO_SEARCH);
         nbSeedsTried += nbSeedsToSearch;
+        
+        // print nbSeedsTried in the same buffer so that the terminal is not overwhelmed with too much prints
+        std::cout << "\rSeeds tried: " << nbSeedsTried << std::flush;
 
         // clear vecInferenceTraceInfos
         executionInfos.clear();

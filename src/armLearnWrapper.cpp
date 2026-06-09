@@ -370,7 +370,7 @@ double ArmLearnWrapper::computeReward(bool givePenaltyMoveUnavailable, int nbMot
 }
 
 
-void ArmLearnWrapper::reset(size_t seed, Learn::LearningMode mode, uint16_t iterationNumber, uint64_t generationNumber) {
+void ArmLearnWrapper::reset(size_t seed, Learn::LearningMode mode) {
 
     // Get the right trajectories' map
     std::vector<std::pair<std::vector<uint16_t>*, armlearn::Input<double>*>>* trajectories;
@@ -388,13 +388,19 @@ void ArmLearnWrapper::reset(size_t seed, Learn::LearningMode mode, uint16_t iter
     }
 
     // Change the starting position
-    this->currentStartingPos = trajectories->at(iterationNumber).first;
+    this->currentStartingPos = trajectories->at(this->iterationNb).first;
 
     device->setPosition(*currentStartingPos); // Reset position
     device->waitFeedback();
 
     // Change the target
-    this->currentTarget = trajectories->at(iterationNumber).second;
+    this->currentTarget = trajectories->at(this->iterationNb).second;
+
+    this->iterationNb++;
+    if (this->iterationNb >= trajectories->size()){
+        this->iterationNb = 0;
+    }
+
     computeInput();
 
     // Init environnement parameters
@@ -418,13 +424,13 @@ void ArmLearnWrapper::reset(size_t seed, Learn::LearningMode mode, uint16_t iter
         allMotorPos.clear();
         vectorValidationInfos.clear();
 
-        for(auto val: *trajectories->at(iterationNumber).first){
+        for(auto val: *trajectories->at(this->iterationNb).first){
             vectorValidationInfos.push_back(val);
         }
 
-        vectorValidationInfos.push_back(trajectories->at(iterationNumber).second->getInput()[0]);
-        vectorValidationInfos.push_back(trajectories->at(iterationNumber).second->getInput()[1]);
-        vectorValidationInfos.push_back(trajectories->at(iterationNumber).second->getInput()[2]);
+        vectorValidationInfos.push_back(trajectories->at(this->iterationNb).second->getInput()[0]);
+        vectorValidationInfos.push_back(trajectories->at(this->iterationNb).second->getInput()[1]);
+        vectorValidationInfos.push_back(trajectories->at(this->iterationNb).second->getInput()[2]);
 
         checkpoint = std::make_shared<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>>(std::chrono::system_clock::now());
     }
@@ -1009,9 +1015,6 @@ void ArmLearnWrapper::setAlgoIsDeterministic(bool isRunning){
     algoIsDeterministic = isRunning;
 }
 
-void ArmLearnWrapper::setgeneration(int newGeneration){
-    generation = newGeneration;
-}
 
 std::vector<uint16_t> ArmLearnWrapper::getInitStartingPos(){
     return initStartingPos;
@@ -1217,4 +1220,9 @@ std::vector<DataSourceInfo> ArmLearnWrapper::getDataSourcesInfo() const {
         infos.push_back({"dataMotorSpeed", dataMotorSpeed.getDimensionsSize().at(0)});
     }
     return infos;
+}
+
+void ArmLearnWrapper::resetIterations()
+{
+    this->iterationNb = 0;
 }

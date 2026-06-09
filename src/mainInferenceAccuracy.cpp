@@ -5,7 +5,7 @@
 #include "codegen/TPG.h"
 #include "armLearnWrapperInference.h"
 #include "instructions.h"
-#include "trainingParameters.h"
+#include "params/trainingParameters.h"
 
 /**
  * Accuracy benchmark for TPG inference, using validation trajectories 
@@ -47,7 +47,7 @@ int main() {
         if (armLearnEnv.isTerminal() || nbActionsEp == g_stepsPerEpisode || nbActions == 0){
             scoreInf += (nbActions == 0) ? 0 : armLearnEnv.getScore();
             nbActionsEp = 0;
-            armLearnEnv.reset(nbActions, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
+            armLearnEnv.reset(nbActions, Learn::LearningMode::VALIDATION);
             nbEpisodes++;
         }
     	typeInf actionID = -1;

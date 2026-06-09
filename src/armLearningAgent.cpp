@@ -9,7 +9,6 @@ void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
     for (auto logger : loggers) {
         logger.get().logNewGeneration(generationNumber);
     }
-
     
     // Populate Sequentially
     Mutator::TPGMutator::populateTPG(*this->tpg, this->archive,
@@ -18,7 +17,6 @@ void Learn::ArmLearningAgent::trainOneGeneration(uint64_t generationNumber){
     for (auto logger : loggers) {
         logger.get().logAfterPopulateTPG();
     }
-
 
     // Evaluate
     auto results =
@@ -182,7 +180,7 @@ std::shared_ptr<Learn::EvaluationResult> Learn::ArmLearningAgent::evaluateJob(
         uint64_t hash = hasher(generationNumber) ^ hasher(iterationNumber);
 
         // Reset the learning Environment
-        le.reset(hash, mode, iterationNumber, generationNumber);
+        le.reset(hash, mode);
 
         uint64_t nbActions = 0;
         while (!le.isTerminal() &&

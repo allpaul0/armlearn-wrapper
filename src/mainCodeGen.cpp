@@ -19,19 +19,17 @@ void validation(float *score, int *nbActions,
     
     std::ofstream ofs ("outLogs/" + trace + ".txt", std::ofstream::out);
     TPG::TPGExecutionEngineInstrumented tee(env);
+    armLearnEnv.reset(0, Learn::LearningMode::VALIDATION);
     
     *nbActions = 0;
     int nbActionsEp = 0;
     int nbEpisodes = 0;
     *score = 0;
 
-    armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
-
-
     while(nbEpisodes < params.nbIterationsPerPolicyEvaluation){
         if (armLearnEnv.isTerminal() || nbActionsEp == params.maxNbActionsPerEval || *nbActions == 0){
             *score += armLearnEnv.getScore();
-            armLearnEnv.reset(0, Learn::LearningMode::VALIDATION, nbEpisodes, 0);
+            armLearnEnv.reset(0, Learn::LearningMode::VALIDATION);
             nbEpisodes++;
             nbActionsEp = 0;
         }
@@ -95,6 +93,7 @@ int main(int argc, char** argv ){
     tpgGraph.clearProgramIntrons();
 
     root = tpgGraph.getRootVertices().front();
+    armLearnEnv.resetIterations();
 
     /**** Play the game again to check the result remains the same ****/
     std::cout << "Play with code generated TPG" << std::endl;
