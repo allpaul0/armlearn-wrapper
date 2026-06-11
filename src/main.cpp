@@ -10,9 +10,12 @@
 #include <gegelati.h>
 #include "instructions.h"
 #include "params/trainingParameters.h"
-#include "armlearn/armLearnLogger.h"
-#include "armlearn/armLearnWrapper.h"
-#include "armlearn/armLearningAgent.h"
+#include "armlearn/logger/ArmLearnLogger.h"
+#include "armlearn/environment/ArmLearnWrapper.h"
+#include "armlearn/training/ArmLearningAgent.h"
+// New headers required by the refactored constructors
+#include "armlearn/evaluation/EvaluationPolicy.h"
+#include "armlearn/training/CurriculumManager.h"
 
 
 void getKey(std::atomic<bool>& exit) {
@@ -46,15 +49,13 @@ int main() {
     TrainingParameters trainingParams;
     trainingParams.loadParametersFromJson("params/trainParams.json");
 
-
     // Set the parameters for the learning process.
-    // Loads them from "params.json" file
     Learn::LearningParameters params;
     File::ParametersParser::loadParametersFromJson("params/params.json", params);
 
     // Create the instruction set for programs
-	Instructions::Set set;
-	fillInstructionSet(set, trainingParams);
+    Instructions::Set gpis;
+    fillInstructionSet(gpis, trainingParams);
 
     // Instantiate the LearningEnvironment
     ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
@@ -63,114 +64,146 @@ int main() {
     std::cout << "Number of threads: " << params.nbThreads << std::endl;
 
     // Generate validation targets.
-    if(params.doValidation && !trainingParams.loadValidationTrajectories){
+    if (params.doValidation && !trainingParams.loadValidationTrajectories) {
         armLearnEnv.updateValidationTrajectories(params.nbIterationsPerPolicyEvaluation);
     }
 
-
-    if(trainingParams.doTrainingValidation){
-        // Update/Generate the first training validation trajectories
+    if (trainingParams.doTrainingValidation) {
         armLearnEnv.updateTrainingValidationTrajectories(params.nbIterationsPerPolicyEvaluation);
     }
 
+    // -------------------------------------------------------------------------
+    // Instantiate the evaluation policy and (optionally) the curriculum manager.
+    //
+    // StandardEvaluationPolicy encapsulates the early-cancellation and score-
+    // aggregation logic that previously lived inline in ArmLearningAgent::evaluateJob().
+    //
+    // CurriculumManager is only wired in when progressive training is active;
+    // otherwise a nullptr is passed and the agent skips curriculum updates.
+    // -------------------------------------------------------------------------
+    Learn::StandardEvaluationPolicy evalPolicy(trainingParams);
+
+    const bool doUpdateLimits =
+        trainingParams.progressiveModeTargets || trainingParams.progressiveModeStartingPos;
+
+    std::unique_ptr<CurriculumManager> curriculum;
+    if (doUpdateLimits) {
+        curriculum = std::make_unique<CurriculumManager>(
+            trainingParams, armLearnEnv.getTrajectoryManager());
+    }
 
     // Instantiate and init the learning agent
-    Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
+    Learn::ArmLearningAgent la(
+        armLearnEnv, gpis, params, trainingParams,
+        evalPolicy,
+        curriculum.get());   // nullptr when progressive training is off
 
     la.init(trainingParams.seed);
 
-    std::atomic<bool> exitProgram = false; // (set to false by other thread)
+    std::atomic<bool> exitProgram = false;
     std::thread threadKeyboard;
 
-    if (trainingParams.interactiveMode && !trainingParams.testing){
+    if (trainingParams.interactiveMode && !trainingParams.testing) {
 #ifndef NO_CONSOLE_CONTROL
-
-    threadKeyboard = std::thread(getKey, std::ref(exitProgram));
-
-    while (exitProgram); // Wait for other thread to print key info.
+        threadKeyboard = std::thread(getKey, std::ref(exitProgram));
+        while (exitProgram);
 #else
-    std::atomic<bool> exitProgram = false; // (set to false by other thread)
+        std::atomic<bool> exitProgram = false;
 #endif
     }
 
-    // If a validation target is done
-    bool doUpdateLimits = (trainingParams.progressiveModeTargets 
-        || trainingParams.progressiveModeStartingPos);
-    bool doValidationTarget = (trainingParams.doTrainingValidation && doUpdateLimits);
+    // -------------------------------------------------------------------------
+    // Loggers
+    //
+    // ArmLearnLogger no longer takes a LearningAgent reference — it only needs
+    // the four boolean flags that control which columns are printed.
+    // Loggers must be registered with the agent via addLogger().
+    // -------------------------------------------------------------------------
+    const bool doTrainingValidation = trainingParams.doTrainingValidation && doUpdateLimits;
 
-    //Creation of the Output stream on cout and on the file
     std::string nameLogs = (!!trainingParams.testing) ? "logsGegelati" : "garbage";
     std::ofstream fichier(("outLogs/" + nameLogs + ".ods"), std::ios::out);
-    auto logFile = *new Log::ArmLearnLogger(la, doValidationTarget, doUpdateLimits, 
-        trainingParams.controlTrajectoriesDeletion, fichier);
-    auto logCout = *new Log::ArmLearnLogger(la, doValidationTarget, doUpdateLimits, 
+
+    // LALogger's constructor registers itself with `la` automatically.
+    // doValidation is read from la.params.doValidation inside LALogger; we
+    // pass the remaining arm-specific flags as extra arguments.
+    Log::ArmLearnLogger logFile(
+        la,
+        doTrainingValidation,
+        doUpdateLimits,
+        trainingParams.controlTrajectoriesDeletion,
+        fichier);
+
+    Log::ArmLearnLogger logCout(
+        la,
+        doTrainingValidation,
+        doUpdateLimits,
         trainingParams.controlTrajectoriesDeletion);
 
     // Use previous Graphs
-    if(trainingParams.startPreviousTPG){
-        auto &tpg = *la.getTPGGraph();
-        Environment env(set, params, armLearnEnv.getDataSources());
-        File::TPGGraphDotImporter dotImporter(("outLogs/dotfiles/" + 
-            trainingParams.namePreviousTPG).c_str(), env, tpg);
+    if (trainingParams.startPreviousTPG) {
+        auto& tpg = *la.getTPGGraph();
+        Environment env(gpis, params, armLearnEnv.getDataSources());
+        File::TPGGraphDotImporter dotImporter(
+            ("outLogs/dotfiles/" + trainingParams.namePreviousTPG).c_str(), env, tpg);
     }
 
-    // Save the validation trajectories
-    if (trainingParams.saveValidationTrajectories){
+    // Save / load validation trajectories
+    if (trainingParams.saveValidationTrajectories) {
         armLearnEnv.saveValidationTrajectories();
     }
-
-    // Load the validation trajectories
-    if(trainingParams.loadValidationTrajectories){
+    if (trainingParams.loadValidationTrajectories) {
         armLearnEnv.loadValidationTrajectories();
     }
 
-    if(trainingParams.testing){
-        auto &tpg = *la.getTPGGraph();
-        Environment env(set, params, armLearnEnv.getDataSources());
-        File::TPGGraphDotImporter dotImporter((trainingParams.tpgDotPathTraining + "/best_root.dot").c_str(), env, tpg);
+    if (trainingParams.testing) {
+        auto& tpg = *la.getTPGGraph();
+        Environment env(gpis, params, armLearnEnv.getDataSources());
+        File::TPGGraphDotImporter dotImporter(
+            (trainingParams.tpgDotPathTraining + "/best_root.dot").c_str(), env, tpg);
         la.testingBestRoot(params.nbIterationsPerPolicyEvaluation);
     } else {
 
-
-        // File for printing best policy stat.
         std::ofstream stats;
         stats.open("outLogs/bestPolicyStats.md");
         Log::LAPolicyStatsLogger logStats(la, stats);
 
-        // Create an exporter for all graphs
         File::TPGGraphDotExporter dotExporter("outLogs/dotfiles/out_0000.dot", *la.getTPGGraph());
 
-        std::shared_ptr<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> checkpoint = std::make_shared<std::chrono::time_point<
-        std::chrono::system_clock, std::chrono::nanoseconds>>(std::chrono::system_clock::now());
+        auto checkpoint = std::make_shared<std::chrono::time_point<
+            std::chrono::system_clock, std::chrono::nanoseconds>>(
+                std::chrono::system_clock::now());
         bool timeLimitReached = false;
 
-        // Train for params.nbGenerations generations
+        std::cout << "start training" << std::endl;
+
         for (uint64_t i = 0; i < params.nbGenerations && !exitProgram && !timeLimitReached; i++) {
 
-            // Update/Generate the training trajectories
             armLearnEnv.updateTrainingTrajectories(trainingParams.nbIterationTraining);
 
-            //print the previous graphs
+            std::cout << "updateTrainingTrajectories" << std::endl;
+
             char buff[64];
-            sprintf(buff,"outLogs/dotfiles/out_%04d.dot", static_cast<uint16_t>(i));
+            sprintf(buff, "outLogs/dotfiles/out_%04d.dot", static_cast<uint16_t>(i));
             dotExporter.setNewFilePath(buff);
             dotExporter.print();
 
+            std::cout << "dotExporter.print" << std::endl;
+
             la.trainOneGeneration(i);
 
-            // Check time limit only if the parameter is above 0
-            if(trainingParams.timeMaxTraining > 0){
-                // Set true if the time is above the limit
-                timeLimitReached = (((std::chrono::duration<double>)(std::chrono::system_clock::now() - *checkpoint)).count() > trainingParams.timeMaxTraining);
+            if (trainingParams.timeMaxTraining > 0) {
+                timeLimitReached = (
+                    ((std::chrono::duration<double>)(
+                        std::chrono::system_clock::now() - *checkpoint)).count()
+                    > trainingParams.timeMaxTraining);
             }
         }
 
-        // Keep best policy
         la.keepBestPolicy();
         dotExporter.setNewFilePath("outLogs/best_root.dot");
         dotExporter.print();
-        
-        // Export best policy statistics.
+
         TPG::PolicyStats ps;
         ps.setEnvironment(la.getTPGGraph()->getEnvironment());
         ps.analyzePolicy(la.getBestRoot().first);
@@ -179,24 +212,20 @@ int main() {
         bestStats << ps;
         bestStats.close();
 
-        // close log file also
         stats.close();
     }
 
     // cleanup
-    for (unsigned int i = 0; i < set.getNbInstructions(); i++) {
-        delete (&set.getInstruction(i));
+    for (unsigned int i = 0; i < gpis.getNbInstructions(); i++) {
+        delete (&gpis.getInstruction(i));
     }
 
     if (trainingParams.interactiveMode && !trainingParams.testing) {
 #ifndef NO_CONSOLE_CONTROL
-    // Exit the thread
-    std::cout << "Exiting program, press a key then [enter] to exit if nothing happens.";
-    threadKeyboard.join();
+        std::cout << "Exiting program, press a key then [enter] to exit if nothing happens.";
+        threadKeyboard.join();
 #endif
     }
 
     return 0;
 }
-
-

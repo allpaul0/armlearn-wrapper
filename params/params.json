@@ -82,7 +82,7 @@
 					// Number of root TPGTeams to maintain when populating the TPGGraph
 					// "nbRoots" : 100, // Default value
 
-					"nbRoots" : 2000,
+					"nbRoots" : 10,
 
 					// Probability of adding an outgoing Edge to a Team.
 					// "pEdgeAddition" : 0.7, // Default value
