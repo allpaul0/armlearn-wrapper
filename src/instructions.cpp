@@ -56,6 +56,11 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
             set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = $1 * $2;")));
             set.add(*(new Instructions::LambdaInstruction<double, double>(divide, "$0 = $1 / $2;")));
         }
+
+        if(!params.useInstrExpensiveArithmetic && params.useInstrZmmul){
+            set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = $1 * $2;")));
+        }
+
         if(params.useInstrComparison) {
             set.add(*(new Instructions::LambdaInstruction<double, double>(max, "$0 = fmaxf($1, $2);")));
         }
