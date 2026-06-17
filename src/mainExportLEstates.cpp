@@ -14,8 +14,8 @@
 #include "armlearn/armLearningAgent.h"
 #include "codegen/externHeader.h"
 
-#define DEFAULT_NB_SEEDS_TO_SEARCH 2E3 //2E2 // number of seeds used to find graph traversals
-#define MAX_NB_SEEDS_TO_SEARCH 2E5 //2E2 // to avoid infinite loop in complex LE and TPG
+#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 //2E2 // number of seeds used to find graph traversals
+#define MAX_NB_SEEDS_TO_SEARCH 2E3 //2E2 // to avoid infinite loop in complex LE and TPG
 #define NB_VALUES_PER_CLASS 10 //25 // number of occurences of each graph traversal we want to have
 // #define VERBOSE
 
