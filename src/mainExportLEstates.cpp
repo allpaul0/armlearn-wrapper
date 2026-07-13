@@ -1,353 +1,433 @@
-#include <iostream>
-#include <fstream>
+/**
+ * \brief Executable d'export des etats du Learning Environment (LE) pour
+ *        l'InferenceBenchmark embarque.
+ *
+ *  ---------------------------------------------------------------------------
+ *  POURQUOI CE SCRIPT A CHANGE ?
+ *  ---------------------------------------------------------------------------
+ *  Ce script et celui de codegen parcouraient le graphe de deux facons
+ *  DIFFERENTES :
+ *
+ *   - Le script de codegen joue le jeu par ROLLOUTS MULTI-ACTIONS (plusieurs
+ *     doAction() par episode). L'etat du LE evolue au fil de l'episode, ce qui
+ *     permet au TPG de manipuler le Learning Environment et de lui faire atteindre
+ *     des positions qui ne sont pas accessibles a partir de la fonction
+ *     d'initialisation (armLearnEnv.reset(seed)).
+ *     Ces parcours atteignables seulement apres plusieurs interactions impliquent
+ *     l'execution de Teams qui ne sont pas atteignables depuis l'etat initial.
+ *     C'est ce parcours complet qui permet d'identifier les elements reellement
+ *     utilises -> pruning + suppression des introns.
+ *
+ *   - Le script ExportLEstates capturait les etats du LE en n'executant QU'UNE
+ *     SEULE action par seed (reset(seed) puis un unique executeFromRoot, sans
+ *     doAction). Le LE ne quittait donc jamais son etat de depart : seuls les
+ *     parcours declenches par les etats INITIAUX etaient captures. Resultat :
+ *     couverture de graphe incomplete (des Teams n'apparaissent jamais dans
+ *     LE_states.h), ce qui fausse l'InferenceBenchmark.
+ *
+ *  Le correctif de fond : la capture des etats du LE utilise desormais le MEME
+ *  rollout multi-actions que la validation/pruning. On capture (etat, parcours)
+ *  a CHAQUE pas de chaque episode, sur le graphe DEJA prune (donc coherent avec
+ *  le code genere). Les etats profonds sont ainsi captures et la couverture de
+ *  graphe redevient complete.
+ *
+ *  Note technique sur l'instrumentation : le pruning a besoin de compteurs
+ *  d'instrumentation CUMULATIFS (savoir si un element a ete visite AU MOINS une
+ *  fois sur tout le rollout), alors que la capture a besoin de compteurs ISOLES
+ *  par execution (pour lire le parcours exact du pas courant via analyzeExecution).
+ *  Ces deux besoins etant incompatibles sur les memes compteurs, la capture est
+ *  un rollout dedie POST-pruning, mais qui reproduit exactement la meme mecanique
+ *  episodique multi-actions -> memes etats atteints, couverture complete.
+ *
+ *  ---------------------------------------------------------------------------
+ *  ENTREE : LE GRAPHE PRUNE
+ *  ---------------------------------------------------------------------------
+ *  La capture devant se faire sur le graphe DEJA prune, ce programme importe
+ *  trainingParams.tpgDotPathInference, qui doit pointer sur le .dot exporte par
+ *  codegen :
+ *      tpgDotPathInference = "outLogs/codegen/best_root_pruned.dot";
+ *  et NON sur le .dot d'entrainement. C'est ce qui garantit une seule source de
+ *  verite entre codegen et capture : memes identifiants de Teams, memes parcours,
+ *  meme graphe que le code C genere. Le pointer ailleurs desynchronise
+ *  LE_states.h du binaire benchmarke.
+ *  => codegen doit avoir ete execute avant.
+ *
+ *  ---------------------------------------------------------------------------
+ *  SORTIE
+ *  ---------------------------------------------------------------------------
+ *  Une fois la capture terminee, deux choix sont possibles :
+ *  - Si l'on souhaite realiser de l'inference pour mesurer equitablement un TPG,
+ *    on conserve tous les parcours decouverts (mapITI complet) pour l'export
+ *    LE_states.h (minimalTeamCoverOnly = false).
+ *  - Si l'on souhaite faire de la modelisation des Teams du TPG, on peut ne
+ *    conserver qu'un sous-ensemble minimal de parcours couvrant tous les Teams
+ *    decouverts (mapITI minimal) pour l'export LE_states.h
+ *    (minimalTeamCoverOnly = true).
+ */
+
+#include <algorithm>
 #include <filesystem>
-#include <string>
-#include <gegelati.h>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <numeric>
 #include <random>
+#include <set>
+#include <string>
 #include <vector>
-#include<unistd.h>
+
+#include <gegelati.h>
 
 #include "instructions.h"
 #include "params/trainingParameters.h"
+#include "codegen/externHeader.h"
 #include "armlearn/armLearnLogger.h"
 #include "armlearn/armLearnWrapper.h"
 #include "armlearn/armLearningAgent.h"
-#include "codegen/externHeader.h"
 
-#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 //2E2 // number of seeds used to find graph traversals
-#define MAX_NB_SEEDS_TO_SEARCH 2E3 //2E2 // to avoid infinite loop in complex LE and TPG
-#define NB_VALUES_PER_CLASS 10 //25 // number of occurences of each graph traversal we want to have
-// #define VERBOSE
+// -----------------------------------------------------------------------------
+// Parametres de recherche pour l'equilibrage des classes de parcours
+// -----------------------------------------------------------------------------
+#define DEFAULT_NB_SEEDS_TO_SEARCH 2E2 // nb de trajectoires par serie de recherche
+#define MAX_NB_SEEDS_TO_SEARCH     2E3 // borne pour eviter une boucle infinie
+#define NB_VALUES_PER_CLASS        10  // nb d'occurences voulues par parcours de graphe
 
-/* Pourquoi générer des seeds ou des états de l'environnement d'apprentissage pour mesurer les performances du TPG à l'inférence ?
-
-Dans le cadre des TPGs, une seed est utilisé pour initialiser un Pseudo Random Number Generator. Ce dernier génère l'ensemble d'états de départ
-de l’environnement d’apprentissage. A partir de ces états de départ, le TPG prend une action, ce qui modifie les états de l'environnement, ... 
-
-De manière générale, lors de l’inférence, les TPGs optent statistiquement plus pour certaines actions, et donc pour certains parcours.
-
-Ce script sert à équilibrer les parcours de graphe TPG, c’est-à-dire à garantir que chaque parcours depuis un noeud root vers
-une feuille soit représenté le même nombre de fois dans le jeu de données. Ce jeu de données équilibré favorise une comparaison 
-équitable entre TPGs et autres algorithmes de GP. 
-
-La tendance des TPG à choisir d'avantage certains parcours reflète leur capacité à s’adapter aux situations rencontrées 
-dans l’environnement (par exemple sortir d’un blocage contre un mur ou stabiliser un pendule inversé). Autrement dit, le graphe du 
-TPG n’explore pas ses parcours de manière équilibrée par défaut.
-
-Cette réponse du TPG face à son environnement d’apprentissage compique l’évaluation des performances. 
-En effet, si l’on se contente d’observer les parcours réellement suivis par 
-le TPG à partir de quelques positions tirées aléatoirement dans l’environnement, certaines actions/parcours seront sous-représentés.
-
-Pour obtenir des statistiques fiables et équitables il est donc nécessaire de mesurer chaque type de parcours le même nombre de fois, 
-y compris ceux qui seraient rares lors d’une exécution normale en inférence.
-*/
-
-/// @brief this code generates and stores the parameters required at the start
-/// of an ensemble of graph traversal measurements.
-/// Graph traversal measurements are use to compute metrics 
-
-/// The storing of traceTeamIds, which represents the
-/// path of the graph traversal is stored for indicative
-/// purpose.
-
-/// specify if the seeds are randomized in the output header file
-/// allows to distribute the computation and be less dependent to the heating
-/// of the chip.
+/// Si vrai, l'ordre des donnees est randomise dans le header de sortie.
+/// Permet de distribuer le calcul et d'etre moins dependant de la chauffe du CPU.
 bool randomizeSeeds = true;
 
-/// @brief Function to write the content of inferenceTraceInfos to a C Header file called
-/// LE_states.h, used to write starting position of the angle, velocity of the
-/// Learning Environment 
-void storeToHeaderFile(
-    const std::string &filename,
-    const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
-    const std::vector<DataSourceInfo>& dataSourcesInfo,
-    bool randomize, 
-    TrainingParameters trainingParams);
+/// If true, keep only a minimal set of traversals covering every Team,
+/// instead of benchmarking all traversal classes.
+bool minimalTeamCoverOnly = true;
 
-/// @brief Function to extract all doubles from a DataHandler
-/// @param handler the DataHandler to extract doubles from
-/// @return a vector of doubles extracted from the DataHandler
+// -----------------------------------------------------------------------------
+// Declarations
+// -----------------------------------------------------------------------------
+
+/// Capture les etats du LE le long de rollouts MULTI-ACTIONS sur le graphe prune.
+std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>
+captureLEStatesAlongRollouts(const TPG::TPGVertex* root,
+                             ArmLearnWrapper& armLE,
+                             Learn::LearningParameters params,   // copie : on ajuste localement
+                             TrainingParameters trainingParams,  // copie
+                             TPG::TPGExecutionEngineInstrumented& tee,
+                             TPG::TPGGraph& tpgGraph,
+                             const TPG::TPGFactoryInstrumented* factoryInstrumented,
+                             TPG::ExecutionInfos& executionInfos);
+
+/// Extrait tous les doubles d'un DataHandler.
 std::vector<double> extractAllDoubles(const Data::DataHandler& handler);
 
-/// @brief  Function to print the content of mapITI
-/// @param mapITI 
+/// Extrait et concatene l'etat courant complet du LE (tous ses DataSources).
+std::vector<double> extractLEState(ArmLearnWrapper& armLE);
+
+/// Ecrit le contenu de mapITI dans le header C LE_states.h.
+void storeToHeaderFile(const std::string& filename,
+                       const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
+                       const std::vector<DataSourceInfo>& dataSourcesInfo,
+                       bool randomize,
+                       TrainingParameters trainingParams,
+                       bool minimalTeamCoverOnly);
+
+/// Selects a minimal subset of graph traversals such that every Team
+/// appearing in mapITI is visited by at least one kept traversal.
+std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>
+selectMinimalTeamCover(
+    const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>& mapITI);
+
+/// Affiche le contenu de mapITI (parcours -> nb d'occurences captures).
 void print_mapITI(std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI);
 
-
-int main(int argc, char *argv[])
+// =============================================================================
+// MAIN
+// =============================================================================
+int main(int argc, char** argv)
 {
+    std::cout << "\033[1;33m=====[ export des etats du LE (rollout multi-actions, graphe prune) ]=====\033[0m"
+              << std::endl;
 
-    std::cout << "\033[1;33m=====[ export LE states for LE standalone InferenceBenchmark ]=====\033[0m" << std::endl;
+    // -------------------------------------------------------------------------
+    // Chargement des parametres
+    // -------------------------------------------------------------------------
+    TrainingParameters trainingParams;
+    trainingParams.loadParametersFromJson("params/trainParams.json");
 
-    int nbSeedsToSearch = DEFAULT_NB_SEEDS_TO_SEARCH;
-
-    /* Settings */
-
-    // Load parameters
     Learn::LearningParameters params;
     File::ParametersParser::loadParametersFromJson("params/params.json", params);
 
-    TrainingParameters trainingParams;
-    trainingParams.loadParametersFromJson("params/trainParams.json");
-    // Instruction set
+    // Jeu d'instructions
     Instructions::Set set;
     fillInstructionSet(set, trainingParams);
 
-    /* Setup armLearn (simulator of robot arm control) Learning Environment environment and import graph */
+    // Learning Environment (simulateur de bras robotise).
+    // algoIsDeterministic = true : TPG discret a action unique.
+    ArmLearnWrapper armLearnEnv(params.maxNbActionsPerEval, trainingParams, true);
 
-    // Setup Learning Environment 
-    // if the algorithm running (TPG here but can be anything) is deterministic, this var is true. We are in the context of discrete and single action algo (some version of the TPG)
-    // for SAC (non-deterministic because of entropy), it should be false
-    bool algoIsDeterministic = true;
-    ArmLearnWrapper armLE(params.maxNbActionsPerEval, trainingParams, algoIsDeterministic);
-    
-
-    // Instantiate and init the learning agent
-    Learn::ArmLearningAgent la(armLE, set, params, trainingParams);
+    // Learning Agent (fournit l'Environment, identique a celui de codegen)
+    Learn::ArmLearningAgent la(armLearnEnv, set, params, trainingParams);
     la.init(trainingParams.seed);
+    Environment env = la.getTPGGraph()->getEnvironment();
 
-    // Load Envrionment (needed to execute a program)
+    // -------------------------------------------------------------------------
+    // Chargement du graphe PRUNE produit par codegen.
+    //
+    // On ne part PAS du .dot d'entrainement : la capture doit se faire sur le
+    // graphe deja prune, seule facon d'avoir une source de verite unique entre
+    // codegen et capture (memes identifiants de Teams que le code C genere).
+    // -------------------------------------------------------------------------
+    const std::string& dotfile = trainingParams.tpgDotPathInference;
 
-    // Initialisation par le constructeur
-    Environment env(set, params, armLE.getDataSources());
-    
-    // Load graph from dot file
-    auto dotfile = trainingParams.tpgDotPathInference;
+    if (!std::filesystem::exists(dotfile)) {
+        std::cerr << "\033[1;31mError: " << dotfile << " not found.\n"
+                  << "tpgDotPathInference must point to the pruned graph exported "
+                  << "by codegen. Run codegen first.\033[0m" << std::endl;
+        return 1;
+    }
+    if (dotfile == trainingParams.tpgDotPathTraining) {
+        std::cerr << "\033[1;31mError: tpgDotPathInference points to the TRAINING "
+                  << "dot file. Capture must run on the pruned graph, otherwise Team "
+                  << "identifiers will not match the generated C code.\033[0m" << std::endl;
+        return 1;
+    }
+
+    std::cout << "Loading pruned dot file from " << dotfile << std::endl;
     TPG::TPGGraph tpgGraph(env, std::make_unique<TPG::TPGFactoryInstrumented>());
-    File::TPGGraphDotImporter tpgGraphDotImporter((dotfile).c_str(), env, tpgGraph);
-    tpgGraphDotImporter.importGraph();
+    File::TPGGraphDotImporter dot(dotfile.c_str(), env, tpgGraph);
+    dot.importGraph();
 
-    /* Prepare for inference, retrieve root and execution engine */
+    // Le graphe prune n'a qu'une racine. Si ce n'est pas le cas, le .dot n'est
+    // pas celui attendu (probablement un .dot d'entrainement multi-roots).
+    auto roots = tpgGraph.getRootVertices();
+    if (roots.size() != 1) {
+        std::cerr << "\033[1;31mWarning: graph has " << roots.size()
+                  << " roots (expected 1 for a pruned graph). Is " << dotfile
+                  << " really the pruned graph?\033[0m" << std::endl;
+    }
+    const TPG::TPGVertex* root = roots.front();
 
-    // B. Jusqu'ici, on récupérait la racine la plus ancienne (la première créée) donc back() 
-    const TPG::TPGVertex *root(tpgGraph.getRootVertices().back()); //first.back()
+    armLearnEnv.loadValidationTrajectories();
 
-    // Retrieve execution engine
+    // -------------------------------------------------------------------------
+    // Moteur d'execution instrumente + factory (pour isoler chaque parcours)
+    // -------------------------------------------------------------------------
     TPG::TPGExecutionEngineInstrumented tee(env);
-
-    const TPG::TPGFactoryInstrumented* factoryInstrumented = 
+    const TPG::TPGFactoryInstrumented* factoryInstrumented =
         dynamic_cast<const TPG::TPGFactoryInstrumented*>(&tpgGraph.getFactory());
-    
     if (!factoryInstrumented) {
         throw std::runtime_error("Error: TPGFactory is not of type TPGFactoryInstrumented.");
     }
-
     factoryInstrumented->resetTPGGraphCounters(tpgGraph);
 
-
-    /* Prepare to retrieve graph traversal informations */
-
-    // Prepare for Execution informations extraction and export
+    // Annotation du graphe PRUNE pour identifier les Teams lors des parcours.
+    // Les identifiants sont assignes sur le graphe final -> ils correspondent au
+    // graphe genere par la codegen.
     TPG::ExecutionInfos executionInfos;
+    executionInfos.assignIdentifiers((const TPG::TPGTeamInstrumented*)root);
+    std::cout << "completed assignIdentifiers()" << std::endl;
 
-    // Annotate the graph to understand the progress of the execution
-    executionInfos.assignIdentifiers((const TPG::TPGTeamInstrumented *)root);
+    // -------------------------------------------------------------------------
+    // Capture des etats du LE le long de rollouts MULTI-ACTIONS.
+    //
+    // Au lieu d'executer une seule action par seed, on rejoue des episodes
+    // multi-actions (comme le pruning) sur le graphe prune, en capturant
+    // (etat, parcours) a chaque pas. Les etats profonds - et donc les parcours
+    // qui n'apparaissaient jamais - sont captures.
+    // -------------------------------------------------------------------------
+    std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI =
+        captureLEStatesAlongRollouts(root, armLearnEnv, params, trainingParams,
+                                     tee, tpgGraph, factoryInstrumented, executionInfos);
 
-    std::cout << "completed assignIdentifiers()"<< std::endl;
-
-    // We don't know the size of the following struct at compile time
-    // since we want NB_VALUES_PER_CLASS occurences of each graph traversals and we don't
-    // know how many graph traversal there can be for a given TPG a priori
-    // Graph traversal = combinations of Team traversed before reaching action
-    std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI;
-
-    /* TPG Inference */
-
-    int continue_search = 0;
-    int nbSeedsTried = 0;
-
-    do
-    {
-        std::cout << "\n\033[1;33m----- New serie of search through " << nbSeedsToSearch << " seeds -----\033[0m" << std::endl;
-
-        // allow the generation of training validation trajectories which are test trajectories 
-        trainingParams.doTrainingValidation = true; 
-        params.nbIterationsPerPolicyEvaluation = nbSeedsToSearch; // we want to generate nbSeedsToSearch trajectories
-        
-        if(trainingParams.doTrainingValidation){
-            // Update/Generate the first training validation trajectories
-            armLE.updateTrainingValidationTrajectories(params.nbIterationsPerPolicyEvaluation);
-        }
-
-        for (int j = 0; j < nbSeedsToSearch; j++)
-        {
-            // generate the seed, it is used to find an initial value for each dataSource 
-            // of the LearningEnvironment
-        
-            // set the inital arm Learn Wrapper conditions using the seed
-            armLE.reset(j, Learn::LearningMode::TESTING);
-
-            // get the data sources from the LE after reset to store them in the inferenceTraceInfos   
-            std::vector<std::reference_wrapper<const Data::DataHandler>> dataHandlers = armLE.getDataSources();
-            
-            // extract all doubles from all DataHandlers
-            std::vector<double> dataSourcesLE;
-            for (const auto& handlerRef : dataHandlers) {
-                const Data::DataHandler& handler = handlerRef.get();
-                std::vector<double> extracted = extractAllDoubles(handler);
-                dataSourcesLE.insert(dataSourcesLE.end(), extracted.begin(), extracted.end());
-            }
-
-            factoryInstrumented->resetTPGGraphCounters(tpgGraph);
-
-            // execute one action, trace it, and move to the next seed.
-            tee.executeFromRoot(*root);
-
-            // retrieve graph traversal informations from TPG and tee
-            executionInfos.analyzeExecution(tee, tpgGraph, j, dataSourcesLE);
-        }
-
-        // ended a serie of search through nbSeedsToSearch
-
-        // retrieve vecInfTraceInfos
-        std::vector<TPG::InferenceTraceInfos> vecInferenceTraceInfos = executionInfos.getVecInferenceTraceInfos();
-
-        for (TPG::InferenceTraceInfos infTraceInfos : vecInferenceTraceInfos)
-        {
-            // the key is the graph traversal of the inferenceTraceInfos object under inspection
-            // graph Traversals  = list<int> traceTeamIds
-
-            // if the key doesnt exist in the map, insert it with its value
-            if (!mapITI.count(infTraceInfos.traceTeamIds))
-            {
-                //insert the infTraceInfos
-                std::vector<TPG::InferenceTraceInfos> vecITI = {infTraceInfos};
-                // insert key (graphTraversal), value (iTI)
-                mapITI.insert({infTraceInfos.traceTeamIds, vecITI});
-            }
-
-            // else if the key is already present but we have less than NB_VALUES_PER_CLASS values and the seed is not already in the map,
-            // insert the value
-            else
-            {
-                if (mapITI[infTraceInfos.traceTeamIds].size() < NB_VALUES_PER_CLASS)
-                {
-
-                    // iterate over the vector mapITI[infTraceInfos.traceTeamIds] to make sure the seed
-                    // we want to add is not already present
-                    int collision = 0;
-                    for (TPG::InferenceTraceInfos iTI : mapITI[infTraceInfos.traceTeamIds])
-                    {
-                        if (infTraceInfos.seed == iTI.seed)
-                        {
-                            collision++;
-                        }
-                    }
-                    if (!collision)
-                    {
-                        // insert infTraceInfos in pre-existing vector at key infTraceInfos.traceTeamIds of the map mapITI
-                        mapITI[infTraceInfos.traceTeamIds].push_back(infTraceInfos);
-                    }
-                    else
-                    {
-                        std::cerr << "collision" << std::endl;
-                    }
-                }
-            }
-
-            // else discard key, value pair
-        }
-
-        // Display status of the map of inferenceTraceInfos
-        std::cout << "\nStatus of mapITI after this round:\n";
-        print_mapITI(mapITI);
-
-        // Do we have a balanced map ? i.e the same number of values for each graph traversal (NB_VALUES_PER_CLASS)
-        // if yes, stop searching
-        // if not, continue searching, meaning go over new seeds, and exceed nbSeedsToSearch.
-        int balanced = 1;
-        for (std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>::iterator it = mapITI.begin(); it != mapITI.end(); it++)
-        {
-            const std::vector<TPG::InferenceTraceInfos> &iti = it->second;
-            if (iti.size() < NB_VALUES_PER_CLASS)
-            {
-                balanced = 0;
-            }
-        }
-
-        // if not balanced -> continue_serach 
-        // but we need to limit the time spent in this loop at some point
-        // so we stop if we reach MAX_NB_SEEDS_TO_SEARCH
-        // When the Learning Environment is more complex, the size of the TPG is larger
-        // and the number of graph traversals can be very large. Additionnaly, the time to 
-        // compute one inference and to reset the LE is also larger.
-        // So we need to to bound this loop to avoid spending days in it.
-        // The value of MAX_NB_SEEDS_TO_SEARCH can be increased if the user wants to spend more
-        // time in this loop to try to get a more balanced map.
-        continue_search = !balanced && (nbSeedsTried < MAX_NB_SEEDS_TO_SEARCH);
-        nbSeedsTried += nbSeedsToSearch;
-        
-        // print nbSeedsTried in the same buffer so that the terminal is not overwhelmed with too much prints
-        std::cout << "\rSeeds tried: " << nbSeedsTried << std::flush;
-
-        // clear vecInferenceTraceInfos
-        executionInfos.clear();
-
-    } while (continue_search);
-
-    std::cout << "total seeds searched: " << nbSeedsTried << std::endl;
-    std::cout << "graph traversal: " << mapITI.size() << std::endl;
-    
-    // If we exit the loop because we reached MAX_NB_SEEDS_TO_SEARCH, we may have some graph traversals
-    // which have less than NB_VALUES_PER_CLASS values.
-    // To avoid having less than NB_VALUES_PER_CLASS values for some graph traversals,
-    // we duplicate some values until we reach NB_VALUES_PER_CLASS for each graph traversal.
-    // This is not ideal, but it allows to have a balanced dataset for the evaluation.
-    // The duplication is done by duplicating the last value of the vector for each graph traversal.
-    // The other option would be to discard the graph traversals which have less than NB_VALUES_PER_CLASS values,
-    // but this would lead to having less graph traversals and would not be ideal either.
-    // Or at last, we could have a more complex logic to duplicate values, by copying and slighlty modifying
-    // some values to create new ones (for instance, changing the target position slightly)
-    //  but this would be more complex to implement.
-    if (nbSeedsTried >= MAX_NB_SEEDS_TO_SEARCH) { 
-        for (auto& [traceTeamIds, infosVec] : mapITI) {
-            while (infosVec.size() < NB_VALUES_PER_CLASS) {
-                if (!infosVec.empty()) {
-                    infosVec.push_back(infosVec.back()); // Duplicate last InferenceTraceInfos
-                }
-                else {
-                    // Optionally handle empty vector (should not happen if logic is correct)
-                    std::cerr << "Warning: Unable to duplicate InferenceTraceInfos for empty vector." << std::endl;
-                    std::cerr << "There should be at least one InferenceTraceInfos per graph traversal." << std::endl;
-                    break;
-                }
-            }
-        }
+    if (minimalTeamCoverOnly) {
+        mapITI = selectMinimalTeamCover(mapITI);
     }
 
-    // print the final mapITI content in blue to differentiate from previous prints
-    std::cout << "\n\033[1;34m----- Final status of mapITI -----\033[0m\n";
+    std::cout << "\n\033[1;34m----- Etat final de mapITI -----\033[0m\n";
     print_mapITI(mapITI);
 
-    // create outLogs/precalcul directory if it does not exist
+    // -------------------------------------------------------------------------
+    // Export du header d'etats du LE + JSON d'infos
+    // -------------------------------------------------------------------------
     std::filesystem::create_directories("outLogs/precalcul");
+    storeToHeaderFile("outLogs/precalcul/LE_states.h", mapITI,
+                      armLearnEnv.getDataSourcesInfo(), randomizeSeeds, trainingParams,
+                      minimalTeamCoverOnly);
 
-    // Write data to CSV file
-    storeToHeaderFile("outLogs/precalcul/LE_states.h", mapITI, armLE.getDataSourcesInfo(), randomizeSeeds, trainingParams);
-
-    // Empty the vec of InferenceTraceInfos from executionInfos which has current TPG execution context in it
+    // Reconstruit executionInfos a partir des valeurs conservees pour l'export JSON
     executionInfos.clear();
-
-    // Re-fill it with the values from the map we are keeping
-    std::vector<TPG::InferenceTraceInfos> overallInfTraceInfos; 
-    for (std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>::iterator it = mapITI.begin(); it != mapITI.end(); it++)
-    {
+    std::vector<TPG::InferenceTraceInfos> overallInfTraceInfos;
+    for (auto it = mapITI.begin(); it != mapITI.end(); ++it) {
         const std::vector<TPG::InferenceTraceInfos>& iTI = it->second;
-        copy(iTI.begin(), iTI.end(), back_inserter(overallInfTraceInfos));
+        std::copy(iTI.begin(), iTI.end(), std::back_inserter(overallInfTraceInfos));
     }
-    
     executionInfos.setVecInferenceTraceInfos(overallInfTraceInfos);
     executionInfos.writeTPGtoJson("outLogs/precalcul/tpgInfos.json");
     executionInfos.writeInfosToJson("outLogs/precalcul/executionInfos.json");
 
     std::cout << "End program" << std::endl;
-
     return 0;
 }
 
- void print_mapITI(std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI){
+// =============================================================================
+// Capture des etats du LE le long de rollouts MULTI-ACTIONS
+// =============================================================================
+std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>
+captureLEStatesAlongRollouts(const TPG::TPGVertex* root,
+                             ArmLearnWrapper& armLE,
+                             Learn::LearningParameters params,
+                             TrainingParameters trainingParams,
+                             TPG::TPGExecutionEngineInstrumented& tee,
+                             TPG::TPGGraph& tpgGraph,
+                             const TPG::TPGFactoryInstrumented* factoryInstrumented,
+                             TPG::ExecutionInfos& executionInfos)
+{
+    std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI;
 
+    int nbSeedsToSearch = DEFAULT_NB_SEEDS_TO_SEARCH;
+    int continue_search = 0;
+    int nbSeedsTried = 0;
+
+    // Identifiant unique par echantillon capture. Indispensable : plusieurs pas
+    // d'un meme episode produisent des etats DIFFERENTS ; leur donner le meme
+    // "seed" ferait rejeter ces etats profonds par la detection de collision.
+    int globalSampleId = 0;
+    int globalVar = 0; // pour debug : print dataSourcesLE une seule fois
+
+    int nbActions = 0;
+
+    do {
+        std::cout << "\n\033[1;33m----- Nouvelle serie de recherche sur " << nbSeedsToSearch
+                  << " trajectoires -----\033[0m" << std::endl;
+
+        // Genere de nouvelles trajectoires de test (variete des conditions initiales)
+        trainingParams.doTrainingValidation = true;
+        params.nbIterationsPerPolicyEvaluation = nbSeedsToSearch;
+        if (trainingParams.doTrainingValidation) {
+            armLE.updateTrainingValidationTrajectories(params.nbIterationsPerPolicyEvaluation);
+        }
+
+        for (int j = 0; j < nbSeedsToSearch; j++) {
+            // Etat initial de l'episode a partir de la trajectoire j
+            armLE.reset(j, Learn::LearningMode::VALIDATION);
+
+            int nbActionsEp = 0;
+
+            // -----------------------------------------------------------------
+            // ROLLOUT MULTI-ACTIONS : coeur du correctif.
+            // On enchaine plusieurs actions (comme la validation/pruning) au lieu
+            // d'une seule. A chaque pas on capture l'etat du LE ET le parcours de
+            // graphe emprunte. Les etats profonds - atteignables uniquement apres
+            // plusieurs interactions - sont ainsi captures, ce qui rend la
+            // couverture des parcours complete.
+            // -----------------------------------------------------------------
+            while (!armLE.isTerminal() && nbActionsEp < params.maxNbActionsPerEval) {
+
+                // 1) Capturer l'etat courant du LE (AVANT l'action)
+                std::vector<double> dataSourcesLE = extractLEState(armLE);
+                if (globalVar < 10) {
+                    std::cout << "dataSourcesLE: ";
+                    for (const auto& val : dataSourcesLE) std::cout << val << " ";
+                    std::cout << std::endl;
+                }
+
+                // 2) Isoler l'instrumentation pour lire le parcours de CE pas
+                factoryInstrumented->resetTPGGraphCounters(tpgGraph);
+
+                // 3) Executer une inference (un parcours racine -> action)
+                auto trace = tee.executeFromRoot(*root);
+
+                // 4) Enregistrer (parcours, etat) avec un id unique par echantillon
+                executionInfos.analyzeExecution(tee, tpgGraph, globalSampleId++, dataSourcesLE);
+
+                // 5) Appliquer l'action pour faire evoluer le LE vers l'etat suivant
+                uint64_t actionID = ((TPG::TPGAction*)(trace.first.back()))->getActionID();
+                armLE.doAction((double)actionID);
+
+                if (globalVar < 10) {
+                    std::vector<double> nextState = extractLEState(armLE);
+                    std::cout << "dataSourcesLE: ";
+                    for (const auto& val : nextState) std::cout << val << " ";
+                    std::cout << std::endl;
+                    globalVar++;
+                }
+
+                nbActionsEp++;
+                nbActions++;
+            }
+
+            std::cout << "Episode " << j << " done. in " << nbActionsEp
+                      << " actions. Current nbActions: " << nbActions << std::endl;
+        }
+
+        // Fin de serie : verser les captures dans la map equilibree
+        std::vector<TPG::InferenceTraceInfos> vecInferenceTraceInfos =
+            executionInfos.getVecInferenceTraceInfos();
+
+        for (const TPG::InferenceTraceInfos& infTraceInfos : vecInferenceTraceInfos) {
+            // Cle = parcours de graphe (list<int> traceTeamIds)
+            if (!mapITI.count(infTraceInfos.traceTeamIds)) {
+                mapITI.insert({infTraceInfos.traceTeamIds,
+                               std::vector<TPG::InferenceTraceInfos>{infTraceInfos}});
+            } else if (mapITI[infTraceInfos.traceTeamIds].size() < NB_VALUES_PER_CLASS) {
+                // Verif de collision (ids uniques -> normalement jamais declenchee)
+                bool collision = false;
+                for (const TPG::InferenceTraceInfos& iTI : mapITI[infTraceInfos.traceTeamIds]) {
+                    if (infTraceInfos.seed == iTI.seed) { collision = true; break; }
+                }
+                if (!collision) {
+                    mapITI[infTraceInfos.traceTeamIds].push_back(infTraceInfos);
+                } else {
+                    std::cerr << "collision" << std::endl;
+                }
+            }
+            // sinon : classe pleine, on ignore
+        }
+
+        std::cout << "\nStatus of mapITI after this round:\n";
+        print_mapITI(mapITI);
+
+        // Map equilibree ? (NB_VALUES_PER_CLASS occurences pour chaque parcours)
+        int balanced = 1;
+        for (auto it = mapITI.begin(); it != mapITI.end(); ++it) {
+            if (it->second.size() < NB_VALUES_PER_CLASS) { balanced = 0; break; }
+        }
+
+        // On continue tant que non equilibre, dans la limite de MAX_NB_SEEDS_TO_SEARCH
+        continue_search = !balanced && (nbSeedsTried < MAX_NB_SEEDS_TO_SEARCH);
+        nbSeedsTried += nbSeedsToSearch;
+        std::cout << "\rSeeds tried: " << nbSeedsTried << std::flush;
+
+        executionInfos.clear();
+
+    } while (continue_search);
+
+    std::cout << "\ntotal seeds searched: " << nbSeedsTried << std::endl;
+    std::cout << "graph traversal: " << mapITI.size() << std::endl;
+
+    // Si on est sorti par MAX_NB_SEEDS_TO_SEARCH, certaines classes peuvent avoir
+    // moins de NB_VALUES_PER_CLASS valeurs. On complete par duplication de la
+    // derniere valeur pour garder un dataset equilibre (fallback).
+    for (auto& [traceTeamIds, infosVec] : mapITI) {
+        while (infosVec.size() < NB_VALUES_PER_CLASS) {
+            if (!infosVec.empty()) {
+                infosVec.push_back(infosVec.back());
+            } else {
+                std::cerr << "Warning: Unable to duplicate InferenceTraceInfos for empty vector."
+                          << std::endl;
+                break;
+            }
+        }
+    }
+
+    return mapITI;
+}
+
+// =============================================================================
+// Helpers
+// =============================================================================
+void print_mapITI(std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI)
+{
     for (const auto& [traceTeams, vecITI] : mapITI) {
         std::cout << "[";
         bool first = true;
@@ -364,46 +444,52 @@ int main(int argc, char *argv[])
 std::vector<double> extractAllDoubles(const Data::DataHandler& handler)
 {
     std::vector<double> result;
-
-    // Combien de double sont stockés ?
     size_t n = handler.getAddressSpace(typeid(const double));
-
     result.reserve(n);
     for (size_t i = 0; i < n; i++) {
         double value = *handler.getDataAt(typeid(const double), i).getSharedPointer<const double>();
         result.push_back(value);
     }
-
     return result;
 }
 
-
-void storeToHeaderFile(
-    const std::string &filename,
-    const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
-    const std::vector<DataSourceInfo>& dataSourcesInfo,
-    bool randomize,
-    TrainingParameters trainingParams)
+std::vector<double> extractLEState(ArmLearnWrapper& armLE)
 {
+    std::vector<double> dataSourcesLE;
+    std::vector<std::reference_wrapper<const Data::DataHandler>> dataHandlers = armLE.getDataSources();
+    for (const auto& handlerRef : dataHandlers) {
+        std::vector<double> extracted = extractAllDoubles(handlerRef.get());
+        dataSourcesLE.insert(dataSourcesLE.end(), extracted.begin(), extracted.end());
+    }
+    return dataSourcesLE;
+}
 
+void storeToHeaderFile(const std::string& filename,
+                       const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> mapITI,
+                       const std::vector<DataSourceInfo>& dataSourcesInfo,
+                       bool randomize,
+                       TrainingParameters trainingParams,
+                       bool minimalTeamCoverOnly)
+{
     std::ofstream file(filename);
-
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cerr << "Error opening file: " << filename << std::endl;
         return;
     }
 
-    // Collect all data into vectors
+    // Collecte des donnees
     std::vector<std::vector<double>> dataSources; // [nbValues][NB_DATA_SOURCES]
     std::vector<unsigned int> seeds;
     std::vector<unsigned int> ids_graph_traversals;
 
-    // Write traversal mapping as comments
+    if (minimalTeamCoverOnly) {
+        file << "// Minimal set of graph traversals covering every Team." << std::endl;
+    } else {
+        file << "// All discovered graph traversals." << std::endl;
+    }
     file << "// ===== Graph Traversal Mapping =====\n";
     int id_GT = 0;
-    for (const auto &[traceTeams, vecITI] : mapITI)
-    {
+    for (const auto& [traceTeams, vecITI] : mapITI) {
         file << "// [" << id_GT << "] -> [";
         bool first = true;
         for (int t : traceTeams) {
@@ -413,8 +499,7 @@ void storeToHeaderFile(
         }
         file << "]\n";
 
-        // collect values
-        for (auto const &iti : vecITI) {
+        for (auto const& iti : vecITI) {
             dataSources.push_back(iti.dataSourcesLE);
             seeds.push_back(iti.seed);
             ids_graph_traversals.push_back(id_GT);
@@ -423,47 +508,41 @@ void storeToHeaderFile(
     }
     file << "// ===================================\n\n";
 
-    // Determine number of values
-    // Fill a vector with indices 0, 1, ..., nbValues-1
+    // Indices 0..nbValues-1
     size_t nbValues = dataSources.size();
     std::vector<size_t> indices(nbValues);
     std::iota(indices.begin(), indices.end(), 0);
 
-    // Randomly shuffle indices if requested
+    // Randomisation optionnelle de l'ordre
     if (randomize) {
-        unsigned int seed = 0; 
+        unsigned int seed = 0;
         std::mt19937 g(seed);
         std::shuffle(indices.begin(), indices.end(), g);
     }
 
-    // Write Header
+    // Header
     file << "#ifndef SEEDS_H\n"
-    << "#define SEEDS_H\n\n"
-    << "#include \"../codegen/externHeader.h\"\n\n"
-    << "#define NB_SEED " << nbValues << "\n"
-    << "#define NB_VALUES_PER_CLASS " << NB_VALUES_PER_CLASS << "\n"
-    << "#define NB_CLASSES " << nbValues/NB_VALUES_PER_CLASS << "\n\n";
+         << "#define SEEDS_H\n\n"
+         << "#include \"../codegen/externHeader.h\"\n\n"
+         << "#define NB_SEED " << nbValues << "\n"
+         << "#define NB_VALUES_PER_CLASS " << NB_VALUES_PER_CLASS << "\n"
+         << "#define NB_CLASSES " << nbValues / NB_VALUES_PER_CLASS << "\n\n";
 
-
-    // Write dataSourcesLE arrays (split into per-feature arrays)
+    // Tableaux dataSourcesLE (un tableau par feature)
     size_t featureIdx = 0;
     for (const auto& info : dataSourcesInfo) {
         file << "// " << info.name << "\n";
         for (size_t i = 0; i < info.size; ++i, ++featureIdx) {
+            file << "static const " << trainingParams.instrType
+                 << " dataSourcesLE_" << featureIdx;
 
-            file << "static const "
-            << trainingParams.instrType
-            << " dataSourcesLE_" << featureIdx;
-
-            // Si featureIdx est entre 9 et 14 => tableau de taille 1
-            if ((featureIdx >= 9 && featureIdx <= 14) || (featureIdx >= 3 && featureIdx <= 5)) {
+            // Cette motorPos ne varie pas -> tableau de taille 1.
+            // /!\ Indices en dur : a revoir si dataSourcesInfo change.
+            if (featureIdx >= 13 && featureIdx <= 14) {
                 file << "[1] = { ";
-                // seule première valeur
                 file << convEnvToInf(dataSources[indices[0]][featureIdx]);
                 file << " };\n";
-            }
-            else {
-                // comportement normal
+            } else {
                 file << "[NB_SEED] = {";
                 for (size_t j = 0; j < indices.size(); j++) {
                     if (j > 0) file << ", ";
@@ -475,44 +554,91 @@ void storeToHeaderFile(
     }
     file << "\n";
 
-
-    // Write seeds
+    // Seeds (indicatif)
     file << "static const uint32_t seeds[NB_SEED] = {";
-    for (size_t i = 0; i < indices.size(); i++)
-    {
-        if (i > 0){
-            file << ", ";
-        }
-        
+    for (size_t i = 0; i < indices.size(); i++) {
+        if (i > 0) file << ", ";
         file << seeds[indices[i]];
-        
     }
-    
     file << "};\n";
 
-
-    // Write ids_graph_traversals
-    
+    // Ids des parcours de graphe
     file << "static const unsigned int ids_graph_traversals[NB_SEED] = {";
-    
-    for (size_t i = 0; i < indices.size(); i++)
-    {
-        if (i > 0)
-        {
-            file << ", ";
-        }
+    for (size_t i = 0; i < indices.size(); i++) {
+        if (i > 0) file << ", ";
         file << ids_graph_traversals[indices[i]];
     }
     file << "};\n";
 
-
     file << "\n#endif // SEEDS_H\n";
-
     file.close();
 
-    if (randomize)
-    {
-        std::cout << "Data order was randomized." << std::endl;
-    }
+    if (randomize) std::cout << "Data order was randomized." << std::endl;
     std::cout << "Data written to " << filename << " successfully." << std::endl;
+}
+
+/// @brief Selects a minimal subset of graph traversals such that every Team
+///        appearing in mapITI is visited by at least one kept traversal.
+///
+/// Set-cover problem (NP-hard), solved with the classic greedy heuristic:
+/// repeatedly keep the traversal that covers the largest number of still
+/// uncovered Teams. Ties are broken by shorter traversal, then by key order,
+/// so the result is deterministic across runs.
+std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>
+selectMinimalTeamCover(
+    const std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>>& mapITI)
+{
+    // 1) Universe: every Team reachable through the discovered traversals
+    std::set<int> uncovered;
+    for (const auto& [traceTeams, _] : mapITI)
+        uncovered.insert(traceTeams.begin(), traceTeams.end());
+
+    const size_t nbTeamsTotal = uncovered.size();
+
+    // 2) Greedy cover
+    std::map<std::list<int>, std::vector<TPG::InferenceTraceInfos>> minimalMap;
+
+    while (!uncovered.empty()) {
+        const std::list<int>* bestKey = nullptr;
+        size_t bestGain = 0;
+
+        for (const auto& [traceTeams, vecITI] : mapITI) {
+            if (minimalMap.count(traceTeams)) continue; // already kept
+
+            size_t gain = 0;
+            for (int t : traceTeams)
+                if (uncovered.count(t)) gain++;
+
+            // strictly better gain, or equal gain with a shorter traversal
+            if (gain > bestGain ||
+                (gain == bestGain && gain > 0 && bestKey &&
+                 traceTeams.size() < bestKey->size())) {
+                bestGain = gain;
+                bestKey  = &traceTeams;
+            }
+        }
+
+        // No remaining traversal covers any uncovered Team. Happens if a Team of
+        // the pruned graph was never traversed during capture -> report rather
+        // than loop forever.
+        if (!bestKey || bestGain == 0) {
+            std::cerr << "\n\033[1;31mWarning: " << uncovered.size()
+                      << " Team(s) cannot be covered by any captured traversal: ";
+            for (int t : uncovered) std::cerr << "T" << t << " ";
+            std::cerr << "\033[0m" << std::endl;
+            break;
+        }
+
+        minimalMap[*bestKey] = mapITI.at(*bestKey);
+        for (int t : *bestKey) uncovered.erase(t);
+    }
+
+    std::cout << "\n\033[1;34m----- Minimal Team cover -----\033[0m\n";
+    std::cout << "Traversals kept: " << minimalMap.size() << " / "
+              << mapITI.size() << std::endl;
+    std::cout << "Teams covered:   " << (nbTeamsTotal - uncovered.size())
+              << " / " << nbTeamsTotal << std::endl;
+    print_mapITI(minimalMap);
+
+    return minimalMap;
 }
