@@ -86,6 +86,7 @@ list(REMOVE_ITEM
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapperInference.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainInferenceBenchmark.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGenExportLEstates.cpp
         )
 
 
@@ -161,10 +162,26 @@ list(REMOVE_ITEM
         )
 list(APPEND
         armgegelati_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGenExportLEstates.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearnWrapper.h
         ${CMAKE_CURRENT_SOURCE_DIR}/./src/armlearn/armLearningAgent.cpp
+)
+
+
+# CodeGenExport
+add_executable(CodeGenExport ${armgegelati_files})
+target_link_libraries(CodeGenExport ${GEGELATI_LIBRARIES} /usr/local/lib/libarmlearn.so)
+target_compile_definitions(CodeGenExport PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
+
+list(REMOVE_ITEM
+        armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGenExportLEstates.cpp
+)
+list(APPEND
+        armgegelati_files
+        ${CMAKE_CURRENT_SOURCE_DIR}/./src/mainCodeGen.cpp
 )
 
 
