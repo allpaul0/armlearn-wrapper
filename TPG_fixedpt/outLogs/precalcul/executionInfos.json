@@ -1,0 +1,817 @@
+{
+	"1134" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1137" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1139" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1140" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1141" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1142" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1143" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1144" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1145" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1146" : 
+	{
+		"nbEvaluatedPrograms" : 32,
+		"nbEvaluatedTeams" : 7,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 14,
+			"1" : 4,
+			"2" : 8,
+			"3" : 9,
+			"4" : 2,
+			"5" : 5
+		},
+		"traceTeamIds" : "0, 2, 7, 4, 9, 10, 16"
+	},
+	"1380" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1382" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1383" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1384" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1385" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1386" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1387" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1388" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"1455" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"2062" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"24174" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"24363" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"244361" : 
+	{
+		"nbEvaluatedPrograms" : 18,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 8,
+			"1" : 2,
+			"2" : 5,
+			"3" : 4,
+			"4" : 2,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 3, 9, 15"
+	},
+	"244563" : 
+	{
+		"nbEvaluatedPrograms" : 18,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 8,
+			"1" : 2,
+			"2" : 5,
+			"3" : 4,
+			"4" : 2,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 3, 9, 15"
+	},
+	"28600" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"292243" : 
+	{
+		"nbEvaluatedPrograms" : 18,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 8,
+			"1" : 2,
+			"2" : 5,
+			"3" : 4,
+			"4" : 2,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 3, 9, 15"
+	},
+	"2931" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2932" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2934" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2936" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2938" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2940" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2942" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2944" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2946" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"2949" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 11,
+			"1" : 4,
+			"2" : 7,
+			"3" : 6,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 3, 9, 14"
+	},
+	"3081" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"363183" : 
+	{
+		"nbEvaluatedPrograms" : 18,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 8,
+			"1" : 2,
+			"2" : 5,
+			"3" : 4,
+			"4" : 2,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 3, 9, 15"
+	},
+	"381885" : 
+	{
+		"nbEvaluatedPrograms" : 18,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 8,
+			"1" : 2,
+			"2" : 5,
+			"3" : 4,
+			"4" : 2,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 3, 9, 15"
+	},
+	"63793" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"782" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"783" : 
+	{
+		"nbEvaluatedPrograms" : 19,
+		"nbEvaluatedTeams" : 4,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 10,
+			"1" : 3,
+			"2" : 5,
+			"3" : 5,
+			"5" : 3
+		},
+		"traceTeamIds" : "0, 5, 4, 12"
+	},
+	"80967" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"80995" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	},
+	"89224" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89225" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89226" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89227" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89228" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89229" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89230" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89231" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89232" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"89233" : 
+	{
+		"nbEvaluatedPrograms" : 23,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 12,
+			"1" : 4,
+			"2" : 8,
+			"3" : 4,
+			"4" : 2,
+			"5" : 4
+		},
+		"traceTeamIds" : "0, 1, 6, 9, 14"
+	},
+	"95925" : 
+	{
+		"nbEvaluatedPrograms" : 21,
+		"nbEvaluatedTeams" : 5,
+		"nbExecutionForEachInstr" : 
+		{
+			"0" : 9,
+			"1" : 3,
+			"2" : 7,
+			"3" : 3,
+			"4" : 2,
+			"5" : 2
+		},
+		"traceTeamIds" : "0, 2, 8, 13, 11"
+	}
+}
