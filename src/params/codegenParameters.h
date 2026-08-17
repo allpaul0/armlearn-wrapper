@@ -65,11 +65,11 @@ public:
 
     // Instrumentation at Team level (start, compute all progs, end) 
     // used for Basic Block analysis of TPG latency
-    bool isInstrumented = false;
+    bool teamInstrumented = false;
 
     // Decoration means adding labels before Team sections to ease 
     // parsing of assembly code 
-    bool isDecorated = false;
+    bool teamDecorated = false;
 
     /**
      * \brief Loads configuration from a JSON file and updates 

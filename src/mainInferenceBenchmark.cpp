@@ -65,7 +65,7 @@ void assign_LE_values(int seed)
 
 int main()
 {
-    typeInf actionID = -1;
+    int actionID = -1;
     std::chrono::_V2::system_clock::time_point start, end;
 
     // to store latencies per class
@@ -78,13 +78,17 @@ int main()
         assign_LE_values(seed);
 
         start = std::chrono::high_resolution_clock::now();
-        for (int j = 0; j < NB_ACTIONS_INF; j++)
-        {
+        //for (int j = 0; j < NB_ACTIONS_INF; j++)
+        //{
             inferenceTPG(&actionID, in1, in2, in3, in4);
-        }
+        //}
         end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> cpu_time_used = end - start;
+
+        //#ifdef DEBUG
+        std::cout << "actionID: " << actionID << ",seed : " << seed << ", class: " << ids_graph_traversals[seed] << std::endl;
+        //#endif
 
         double time_ns = cpu_time_used.count() / NB_ACTIONS_INF * 1e9;
 

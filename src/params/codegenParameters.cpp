@@ -37,12 +37,12 @@ void CodeGenParameters::setAllParamsFrom(const Json::Value& root)
 
 void CodeGenParameters::setParameterFromString(const std::string& param, Json::Value const& value)
 {
-    if (param == "isInstrumented"){
-        isInstrumented = (bool)value.asBool();
+    if (param == "teamInstrumented"){
+        teamInstrumented = (bool)value.asBool();
         return; 
     }
-    if (param == "isDecorated") {
-        isDecorated = (bool)value.asBool();
+    if (param == "teamDecorated") {
+        teamDecorated = (bool)value.asBool();
         return;
     }
 
