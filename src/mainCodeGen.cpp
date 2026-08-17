@@ -166,8 +166,8 @@ int main(int argc, char** argv)
     CodeGen::TPGGenerationEngineFactory factory(CodeGen::TPGGenerationEngineFactory::gotoMode);
     std::unique_ptr<CodeGen::TPGGenerationEngine> tpggen =
         factory.create("TPG", tpgGraph, codeGenPath, trainingParams.instrType, 
-                        codeGenParams.teamInstrumented, codeGenParams.teamDecorated
-                        codegenParams.dispatchInstrumented, codeGenParams.dispatchDecorated);
+                        codeGenParams.teamInstrumented, codeGenParams.teamDecorated,
+                        codeGenParams.dispatchInstrumented, codeGenParams.dispatchDecorated);
     tpggen->generateTPGGraph();
 
     std::cout << "\nPruned graph exported to " << bestDot << std::endl;
