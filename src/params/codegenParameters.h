@@ -71,6 +71,15 @@ public:
     // parsing of assembly code 
     bool teamDecorated = false;
 
+      // Instrumentation of dispatch at Team level (start, compute dispatch, end)
+    // used for analysis of dispatch latency
+    bool dispatchInstrumented = false;
+
+    // Decoration of dispatch at Team level
+    // unused for now since we only look at the number of progs in the dispatch
+    // no at the instructions in the dispatch
+    bool dispatchDecorated = false;
+
     /**
      * \brief Loads configuration from a JSON file and updates 
      * this object's parameters.
