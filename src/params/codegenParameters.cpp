@@ -45,6 +45,14 @@ void CodeGenParameters::setParameterFromString(const std::string& param, Json::V
         teamDecorated = (bool)value.asBool();
         return;
     }
+    if (param == "dispatchInstrumented"){
+        dispatchInstrumented = (bool)value.asBool();
+        return;
+    }
+    if (param == "dispatchDecorated"){
+        dispatchDecorated = (bool)value.asBool();
+        return;
+    }
 
     // we didn't recognize the symbol
     std::cerr << "Ignoring unknown parameter " << param << std::endl;
