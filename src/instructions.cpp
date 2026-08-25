@@ -38,7 +38,7 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
             set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = log($1);")));
             set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = exp($1);")));
         }
-    } else if (params.instrType == "float") {
+    } else if (params.instrType == "float" || params.instrType == "float_iset64") {
         auto add = [](double a, double b) -> double { return (float)a + (float)b; };
         auto minus = [](double a, double b) -> double { return (float)a - (float)b; };
         auto times = [](double a, double b) -> double { return (float)a * (float)b; };

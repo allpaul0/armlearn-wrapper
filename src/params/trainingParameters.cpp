@@ -223,7 +223,7 @@ void TrainingParameters::setParameterFromString(const std::string& param, Json::
 
     if (param == "instrType") {
         std::string type = value.asString();
-        if (type == "int" || type == "float" || type == "double" || type == "fixedpt") {
+        if (type == "int" || type == "float" || type == "float_iset32" || type == "float_iset64" || type == "double" || type == "fixedpt") {
             instrType = type;
         } else {
             std::cerr << "Unknown instruction type: " << type << std::endl;
