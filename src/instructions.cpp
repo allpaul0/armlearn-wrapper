@@ -81,11 +81,11 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
         auto times = [](double a, double b) -> double { return (float)a * (float)b; };
         auto divide = [](double a, double b) -> double { return (float)a / (float)b; };
         auto max = [](double a, double b) -> double { return std::fmax((float)a, (float)b); };
-        auto cos = [](double a) -> double { return std::cosf((float)a); };
-        auto sin = [](double a) -> double { return std::sinf((float)a); };
-        auto tan = [](double a) -> double { return std::tanf((float)a); };
-        auto exp = [](double a) -> double { return std::expf((float)a); };
-        auto log = [](double a) -> double { return std::logf((float)a); };
+        auto cos = [](double a) -> double { return cosf((float)a); };
+        auto sin = [](double a) -> double { return sinf((float)a); };
+        auto tan = [](double a) -> double { return tanf((float)a); };
+        auto exp = [](double a) -> double { return expf((float)a); };
+        auto log = [](double a) -> double { return logf((float)a); };
 
         set.add(*(new Instructions::LambdaInstruction<double, double>(add, "$0 = $1 + $2;")));
         set.add(*(new Instructions::LambdaInstruction<double, double>(minus, "$0 = $1 - $2;")));
