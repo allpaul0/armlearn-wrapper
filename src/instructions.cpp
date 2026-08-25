@@ -75,6 +75,43 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
             set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = log($1);")));
             set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = exp($1);")));
         }
+    } else if (params.instrType == "float_iset32") {
+        auto add = [](double a, double b) -> double { return (float)a + (float)b; };
+        auto minus = [](double a, double b) -> double { return (float)a - (float)b; };
+        auto times = [](double a, double b) -> double { return (float)a * (float)b; };
+        auto divide = [](double a, double b) -> double { return (float)a / (float)b; };
+        auto max = [](double a, double b) -> double { return std::fmax((float)a, (float)b); };
+        auto cos = [](double a) -> double { return std::cosf((float)a); };
+        auto sin = [](double a) -> double { return std::sinf((float)a); };
+        auto tan = [](double a) -> double { return std::tanf((float)a); };
+        auto exp = [](double a) -> double { return std::expf((float)a); };
+        auto log = [](double a) -> double { return std::logf((float)a); };
+
+        set.add(*(new Instructions::LambdaInstruction<double, double>(add, "$0 = $1 + $2;")));
+        set.add(*(new Instructions::LambdaInstruction<double, double>(minus, "$0 = $1 - $2;")));
+        if(params.useInstrExpensiveArithmetic) {
+            set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = $1 * $2;")));
+            set.add(*(new Instructions::LambdaInstruction<double, double>(divide, "$0 = $1 / $2;")));
+        }
+
+        if(!params.useInstrExpensiveArithmetic && params.useInstrZmmul){
+            set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = $1 * $2;")));
+        }
+
+        if(params.useInstrComparison) {
+            set.add(*(new Instructions::LambdaInstruction<double, double>(max, "$0 = fmaxf($1, $2);")));
+        }
+        
+        if(params.useInstrTrig) {
+            set.add(*(new Instructions::LambdaInstruction<double>(cos, "$0 = cosf($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(sin, "$0 = sinf($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(tan, "$0 = tanf($1);")));
+        }
+
+        if(params.useInstrLogExp) {
+            set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = logf($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = expf($1);")));
+        }
     } else if(params.instrType == "int") {
         auto add = [](double a, double b) -> double { return (int)a + (int)b; };
         auto minus = [](double a, double b) -> double { return (int)a - (int)b; };
