@@ -5,7 +5,16 @@
     
     // Decoration means adding labels before Team sections to ease 
     // parsing of assembly code 
-    "teamDecorated" : true
+    "teamDecorated" : true,
+
+    // Instrumentation of dispatch at Team level (start, compute dispatch, end)
+    // used for analysis of dispatch latency
+    "dispatchInstrumented" : false,
+
+    // Decoration of dispatch at Team level
+    // unused for now since we only look at the number of progs in the dispatch
+    // no at the instructions in the dispatch
+    "dispatchDecorated" : false
 
     /// This list could be extended to configure codegen at runtime
     /// such as in nextflow processes 
