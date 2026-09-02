@@ -145,7 +145,7 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
             set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = f_pow2($1);")));
         }
     }
-    else if(params.instrType == "fixedpt") {
+    else if(params.instrType == "fixedpt" || params.instrType == "fixedpt_iset64") {
         auto add = [](double a, double b) -> double { return fixedpt_to_double(double_to_fixedpt(a) + double_to_fixedpt(b)); };
         auto minus = [](double a, double b) -> double { return fixedpt_to_double(double_to_fixedpt(a) - double_to_fixedpt(b)); };
         auto times = [](double a, double b) -> double { return fixedpt_to_double(fixedpt_mul(double_to_fixedpt(a), double_to_fixedpt(b))); };
@@ -184,6 +184,52 @@ void fillInstructionSet(Instructions::Set& set, TrainingParameters params) {
         if(params.useInstrLogExp) {
             set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = fixedpt_ln($1);")));
             set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = fixedpt_exp($1);")));
+        }
+
+        if(params.useInstrLog2Exp2) {
+            set.add(*(new Instructions::LambdaInstruction<double>(log2, "$0 = f_log2($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(exp2, "$0 = f_pow2($1);")));
+        }
+    }
+    else if(params.instrType == "fixedpt_iset32") {
+        auto add = [](double a, double b) -> double { return fixedpt_to_double(double_to_fixedpt(a) + double_to_fixedpt(b)); };
+        auto minus = [](double a, double b) -> double { return fixedpt_to_double(double_to_fixedpt(a) - double_to_fixedpt(b)); };
+        auto times = [](double a, double b) -> double { return fixedpt_to_double(fixedpt_mul(double_to_fixedpt(a), double_to_fixedpt(b))); };
+        auto divide = [](double a, double b) -> double { return fixedpt_to_double(protected_fixedpt_div_32(double_to_fixedpt(a), double_to_fixedpt(b))); };
+        auto max = [](double a, double b) -> double { return fixedpt_to_double(std::max(double_to_fixedpt(a), double_to_fixedpt(b))); };
+        auto cos = [](double a) -> double { return fixedpt_to_double(fixedpt_cos(double_to_fixedpt(a))); };
+        auto sin = [](double a) -> double {  return fixedpt_to_double(fixedpt_sin(double_to_fixedpt(a))); };
+        auto tan = [](double a) -> double { return fixedpt_to_double(fixedpt_tan_wdiv32(double_to_fixedpt(a))); };
+        auto exp = [](double a) -> double { return fixedpt_to_double(fixedpt_exp_wdiv32(double_to_fixedpt(a))); };
+        auto log = [](double a) -> double { return fixedpt_to_double(fixedpt_ln_wdiv32(double_to_fixedpt(a))); };
+        auto exp2 = [](double a) -> double { return fixedpt_to_double(f_pow2(double_to_fixedpt(a))); };
+        auto log2 = [](double a) -> double { return fixedpt_to_double(f_log2(double_to_fixedpt(a))); };
+
+        set.add(*(new Instructions::LambdaInstruction<double, double>(add, "$0 = $1 + $2;")));
+        set.add(*(new Instructions::LambdaInstruction<double, double>(minus, "$0 = $1 - $2;")));
+       
+        if(params.useInstrExpensiveArithmetic) {
+            set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = fixedpt_mul($1,$2);")));
+            set.add(*(new Instructions::LambdaInstruction<double, double>(divide, "$0 = protected_fixedpt_div_32($1,$2);")));
+        }
+        
+        if(!params.useInstrExpensiveArithmetic && params.useInstrZmmul){
+            set.add(*(new Instructions::LambdaInstruction<double, double>(times, "$0 = fixedpt_mul($1,$2);")));
+        }
+        
+        if(params.useInstrComparison) {
+            set.add(*(new Instructions::LambdaInstruction<double, double>(max, "$0 = ($1 > $2) ? $1 : $2;")));
+        }
+        
+        if(params.useInstrTrig) {
+            set.add(*(new Instructions::LambdaInstruction<double>(cos, "$0 = fixedpt_cos($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(sin, "$0 = fixedpt_sin($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(tan, "$0 = fixedpt_tan_wdiv32($1);")));
+        }
+
+        if(params.useInstrLogExp) {
+            set.add(*(new Instructions::LambdaInstruction<double>(log, "$0 = fixedpt_ln_wdiv32($1);")));
+            set.add(*(new Instructions::LambdaInstruction<double>(exp, "$0 = fixedpt_exp_wdiv32($1);")));
         }
 
         if(params.useInstrLog2Exp2) {
