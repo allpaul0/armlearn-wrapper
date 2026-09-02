@@ -29,7 +29,7 @@
     "testing": false,
     "tpgDotPathTraining": "outLogs/best_root.dot",
     "tpgDotPathInference": "outLogs/codegen/best_root_pruned.dot",
-    "instrType": "fixedpt",
+    "instrType": "fixedpt_iset32",
     "useInstrTrig": false,
     "useInstrLogExp": false,
     "useInstrComparison": true,
