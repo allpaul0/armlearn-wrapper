@@ -478,7 +478,7 @@ void storeToHeaderFile(const std::string& filename,
     }
 
     // Ajustement du type d'instruction pour la sortie C
-    if trainingParams.instrType == "float_iset32" || trainingParams.instrType == "float_iset64" {
+    if (trainingParams.instrType == "float_iset32" || trainingParams.instrType == "float_iset64") {
         trainingParams.instrType = "float";
     } else if (trainingParams.instrType == "fixedpt_iset32" || trainingParams.instrType == "fixedpt_iset64") {
         trainingParams.instrType = "fixedpt";
