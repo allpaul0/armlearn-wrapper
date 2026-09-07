@@ -182,17 +182,21 @@ static inline fixedpt __attribute__((always_inline))protected_fixedpt_div(fixedp
  * The catch: it divides by (B >> 8), not B. So we must reject any B whose
  * top-half is zero, i.e. |B| < 256 in raw units (|B_real| < ~0.0039).
  * Checking "B == 0" is NOT enough — B in [1..255] would still divide by zero.
+ * 
+ * Checking if A << 8 is INT32_MIN is also necessary, because INT32_MIN / -1 is undefined behavior in C (overflow).
+ * 
  *
  * Returns 0 as a safe sentinel when the divisor is too small.
  */
 static inline fixedpt __attribute__((always_inline))
 protected_fixedpt_div_32(fixedpt A, fixedpt B) {
-    /* 1 << (FIXEDPT_FBITS/2) == 256 in Q16.16 : the smallest B that
+	/* 1 << (FIXEDPT_FBITS/2) == 256 in Q16.16 : the smallest B that
      * survives the >>8 without collapsing to zero. */
-    if (fixedpt_abs(B) < ((fixedpt)1 << (FIXEDPT_FBITS / 2)))
+    const int32_t d = (int32_t)B >> (FIXEDPT_FBITS / 2);
+    const int32_t n = (int32_t)((uint32_t)A << (FIXEDPT_FBITS / 2));
+    if (d == 0 || (d == -1 && n == INT32_MIN))
         return 0;
-
-    return fixedpt_div_32(A, B);
+    return (fixedpt)(n / d);
 }
 
 /*
